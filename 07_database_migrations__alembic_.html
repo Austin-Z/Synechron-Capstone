@@ -1,0 +1,862 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 7: Database Migrations (Alembic) &#8212; Fund of Funds Analysis</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '07_database_migrations__alembic_';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 8: Application Configuration (Settings)" href="08_application_configuration__settings_.html" />
+    <link rel="prev" title="Chapter 6: AI Service (GeminiService)" href="06_ai_service__geminiservice_.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Fund of Funds Analysis - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Fund of Funds Analysis - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Tutorial: FOFs-Capstone
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_data_collector__edgarcollector_.html">Chapter 1: Data Collector (EdgarCollector)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_database_models__sqlalchemy_.html">Chapter 2: Database Models (SQLAlchemy)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_database_manager.html">Chapter 3: Database Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_data_loading___management_scripts.html">Chapter 4: Data Loading &amp; Management Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_fund_service.html">Chapter 5: Fund Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_ai_service__geminiservice_.html">Chapter 6: AI Service (GeminiService)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 7: Database Migrations (Alembic)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_application_configuration__settings_.html">Chapter 8: Application Configuration (Settings)</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/Austin-Z/FOFs-Capstone" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/Austin-Z/FOFs-Capstone/issues/new?title=Issue%20on%20page%20%2F07_database_migrations__alembic_.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/07_database_migrations__alembic_.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 7: Database Migrations (Alembic)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-changing-the-blueprints-after-building">The Problem: Changing the Blueprints After Building</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#meet-alembic-version-control-for-your-database">Meet Alembic: Version Control for Your Database</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts-explained">Key Concepts Explained</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-use-alembic-the-workflow">How to Use Alembic: The Workflow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood-how-alembic-works">Under the Hood: How Alembic Works</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diving-deeper-into-the-code">Diving Deeper into the Code</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-7-database-migrations-alembic">
+<h1>Chapter 7: Database Migrations (Alembic)<a class="headerlink" href="#chapter-7-database-migrations-alembic" title="Link to this heading">#</a></h1>
+<p>Welcome back! In <a class="reference internal" href="06_ai_service__geminiservice_.html"><span class="std std-doc">Chapter 6: AI Service (GeminiService)</span></a>, we saw how our application can use AI to intelligently interact with the fund data we’ve collected and organized. We have our data collector, database models, manager, loading scripts, and even smart services working together.</p>
+<section id="the-problem-changing-the-blueprints-after-building">
+<h2>The Problem: Changing the Blueprints After Building<a class="headerlink" href="#the-problem-changing-the-blueprints-after-building" title="Link to this heading">#</a></h2>
+<p>Imagine you’ve built a house using a set of blueprints (<a class="reference internal" href="02_database_models__sqlalchemy_.html"><span class="std std-doc">Database Models (SQLAlchemy)</span></a>). People have moved in, and furniture (data) is already placed inside. Now, you realize you need to add a new window to the living room or change the plumbing layout. How do you update the house safely without disrupting everything or losing track of the changes you made?</p>
+<p>Similarly, in software development, your database structure (schema) often needs to evolve. You might realize you need to:</p>
+<ul class="simple">
+<li><p>Add a new column to the <code class="docutils literal notranslate"><span class="pre">funds</span></code> table (e.g., a <code class="docutils literal notranslate"><span class="pre">nickname</span></code> for a fund).</p></li>
+<li><p>Change the data type of an existing column.</p></li>
+<li><p>Add a completely new table.</p></li>
+</ul>
+<p>If you just manually change the database, how do you keep track of these changes? How do you ensure the same changes are applied correctly when your teammates run the code, or when you deploy the application to a server? Doing this manually is risky and prone to errors.</p>
+</section>
+<section id="meet-alembic-version-control-for-your-database">
+<h2>Meet Alembic: Version Control for Your Database<a class="headerlink" href="#meet-alembic-version-control-for-your-database" title="Link to this heading">#</a></h2>
+<p>Think of <strong>Alembic</strong> as <strong>version control for your database structure</strong>, much like Git is version control for your code. It’s a powerful Python library specifically designed to work with SQLAlchemy (which we use for our <a class="reference internal" href="02_database_models__sqlalchemy_.html"><span class="std std-doc">Database Models (SQLAlchemy)</span></a>).</p>
+<p>Alembic helps us manage changes to our database schema in a safe, organized, and repeatable way. It allows us to:</p>
+<ol class="arabic simple">
+<li><p><strong>Track Changes:</strong> It keeps a history of every change made to the database structure.</p></li>
+<li><p><strong>Generate Instructions:</strong> When you change your SQLAlchemy models (our blueprints), Alembic can automatically compare the models to the current database structure and generate Python scripts containing the instructions (SQL commands) needed to update the database. These scripts are called <strong>migration scripts</strong>.</p></li>
+<li><p><strong>Apply Changes Step-by-Step:</strong> You can apply these migration scripts one by one to safely evolve your database schema.</p></li>
+<li><p><strong>Revert Changes (Downgrade):</strong> If something goes wrong, Alembic usually allows you to revert (downgrade) the database back to a previous version.</p></li>
+<li><p><strong>Ensure Consistency:</strong> Everyone on the team and all deployment environments (development, testing, production) can use the same migration scripts to ensure their database structures are identical and up-to-date.</p></li>
+</ol>
+</section>
+<section id="key-concepts-explained">
+<h2>Key Concepts Explained<a class="headerlink" href="#key-concepts-explained" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Migration Script:</strong> A Python file generated by Alembic (usually stored in the <code class="docutils literal notranslate"><span class="pre">alembic/versions/</span></code> directory). It contains two main functions:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">upgrade()</span></code>: Describes the changes needed to move the database schema <em>forward</em> to this version (e.g., add a column, create a table).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">downgrade()</span></code>: Describes how to <em>undo</em> the changes made by <code class="docutils literal notranslate"><span class="pre">upgrade()</span></code> (e.g., remove the column, drop the table).</p></li>
+</ul>
+</li>
+<li><p><strong>Revision:</strong> A unique ID assigned by Alembic to each migration script (e.g., <code class="docutils literal notranslate"><span class="pre">5dde2311e9b7</span></code>, <code class="docutils literal notranslate"><span class="pre">1a2b3c4d5e6f</span></code>). This acts like a version number for your database schema.</p></li>
+<li><p><strong>Schema:</strong> The structure of your database – the tables, columns, data types, relationships (foreign keys), etc. This is defined by our <a class="reference internal" href="02_database_models__sqlalchemy_.html"><span class="std std-doc">Database Models (SQLAlchemy)</span></a>.</p></li>
+<li><p><strong>Autogenerate:</strong> An Alembic command (<code class="docutils literal notranslate"><span class="pre">alembic</span> <span class="pre">revision</span> <span class="pre">--autogenerate</span></code>) that automatically compares your current SQLAlchemy models (<code class="docutils literal notranslate"><span class="pre">Base.metadata</span></code>) against the schema of the actual database. It detects differences and creates a new migration script draft containing the necessary <code class="docutils literal notranslate"><span class="pre">upgrade</span></code> and <code class="docutils literal notranslate"><span class="pre">downgrade</span></code> operations. You should always review these auto-generated scripts!</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">alembic_version</span></code> Table:</strong> Alembic creates a special table in your database called <code class="docutils literal notranslate"><span class="pre">alembic_version</span></code>. It uses this table to keep track of which migration revision (version) your database is currently at.</p></li>
+</ul>
+</section>
+<section id="how-to-use-alembic-the-workflow">
+<h2>How to Use Alembic: The Workflow<a class="headerlink" href="#how-to-use-alembic-the-workflow" title="Link to this heading">#</a></h2>
+<p>Let’s walk through a common scenario: adding a new <code class="docutils literal notranslate"><span class="pre">nickname</span></code> column to our <code class="docutils literal notranslate"><span class="pre">Fund</span></code> model.</p>
+<p><strong>Step 1: Modify Your Model</strong></p>
+<p>First, you update the blueprint in your Python code.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/models/database.py (Simplified change)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">DateTime</span> <span class="c1"># Add String</span>
+<span class="c1"># ... other imports ...</span>
+<span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Fund</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;funds&#39;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ticker</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">fund_type</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;fund_of_funds&#39;</span><span class="p">,</span> <span class="s1">&#39;underlying_fund&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fund_type&#39;</span><span class="p">))</span>
+
+    <span class="c1"># --- NEW COLUMN ADDED ---</span>
+    <span class="n">nickname</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># Add a nickname field</span>
+    <span class="c1"># ------------------------</span>
+
+    <span class="n">filings</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Filing&quot;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;fund&quot;</span><span class="p">)</span>
+    <span class="c1"># ... rest of the class ...</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>We simply added a new line <code class="docutils literal notranslate"><span class="pre">nickname</span> <span class="pre">=</span> <span class="pre">Column(String(50),</span> <span class="pre">nullable=True)</span></code> to our <code class="docutils literal notranslate"><span class="pre">Fund</span></code> class definition.</p></li>
+</ul>
+<p><strong>Step 2: Generate the Migration Script</strong></p>
+<p>Now, ask Alembic to compare your updated models with the database and generate the instructions. Open your terminal in the project’s root directory and run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>alembic<span class="w"> </span>revision<span class="w"> </span>--autogenerate<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;Add nickname column to Fund table&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Input:</strong> The command tells Alembic to:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">revision</span></code>: Create a new migration file.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--autogenerate</span></code>: Automatically detect changes by comparing models to the DB.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-m</span> <span class="pre">&quot;...&quot;</span></code>: Add a descriptive message to the migration file name.</p></li>
+</ul>
+</li>
+<li><p><strong>Output:</strong> Alembic connects to the database (using the URL configured in <code class="docutils literal notranslate"><span class="pre">alembic.ini</span></code> or <code class="docutils literal notranslate"><span class="pre">alembic/env.py</span></code>), inspects its current structure, compares it to your <code class="docutils literal notranslate"><span class="pre">Fund</span></code> model (and others), sees the new <code class="docutils literal notranslate"><span class="pre">nickname</span></code> field, and creates a new file like <code class="docutils literal notranslate"><span class="pre">alembic/versions/xxxxxxxxxxxx_add_nickname_column_to_fund.py</span></code>. You’ll see output confirming the file creation.</p></li>
+</ul>
+<p><strong>Step 3: Review the Generated Script</strong></p>
+<p><em>Crucially, always open and review the script Alembic generated!</em> Autogenerate is helpful but not perfect.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: alembic/versions/xxxxxxxxxxxx_add_nickname_column_to_fund.py (Simplified)</span>
+<span class="sd">&quot;&quot;&quot;Add nickname column to Fund table</span>
+
+<span class="sd">Revision ID: xxxxxxxxxxxx</span>
+<span class="sd">Revises: 1a2b3c4d5e6f # Points to the previous migration</span>
+<span class="sd">Create Date: 2023-10-27 10:00:00.000000</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic</span><span class="w"> </span><span class="kn">import</span> <span class="n">op</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sa</span>
+
+<span class="c1"># revision identifiers, used by Alembic.</span>
+<span class="n">revision</span> <span class="o">=</span> <span class="s1">&#39;xxxxxxxxxxxx&#39;</span> <span class="c1"># The unique ID for this change</span>
+<span class="n">down_revision</span> <span class="o">=</span> <span class="s1">&#39;1a2b3c4d5e6f&#39;</span> <span class="c1"># The ID of the migration before this one</span>
+<span class="n">branch_labels</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">depends_on</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">upgrade</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># ### commands auto generated by Alembic - please adjust! ###</span>
+    <span class="c1"># Instruction to add the new &#39;nickname&#39; column to the &#39;funds&#39; table</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">&#39;funds&#39;</span><span class="p">,</span> <span class="n">sa</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="s1">&#39;nickname&#39;</span><span class="p">,</span> <span class="n">sa</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+    <span class="c1"># ### end Alembic commands ###</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">downgrade</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1"># ### commands auto generated by Alembic - please adjust! ###</span>
+    <span class="c1"># Instruction to remove the &#39;nickname&#39; column from the &#39;funds&#39; table</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">drop_column</span><span class="p">(</span><span class="s1">&#39;funds&#39;</span><span class="p">,</span> <span class="s1">&#39;nickname&#39;</span><span class="p">)</span>
+    <span class="c1"># ### end Alembic commands ###</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This script contains the <code class="docutils literal notranslate"><span class="pre">upgrade</span></code> function, which uses <code class="docutils literal notranslate"><span class="pre">op.add_column</span></code> to add our new field.</p></li>
+<li><p>It also contains the <code class="docutils literal notranslate"><span class="pre">downgrade</span></code> function, using <code class="docutils literal notranslate"><span class="pre">op.drop_column</span></code> to remove it if we need to revert.</p></li>
+<li><p>It correctly identifies the <code class="docutils literal notranslate"><span class="pre">revision</span></code> ID and the <code class="docutils literal notranslate"><span class="pre">down_revision</span></code> (the previous migration).</p></li>
+</ul>
+<p><strong>Step 4: Apply the Migration</strong></p>
+<p>If the script looks correct, tell Alembic to apply it to the database:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>alembic<span class="w"> </span>upgrade<span class="w"> </span>head
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Input:</strong> This command tells Alembic to:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">upgrade</span></code>: Apply pending migrations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">head</span></code>: Apply all migrations up to the latest one (the “head” revision).</p></li>
+</ul>
+</li>
+<li><p><strong>Output:</strong> Alembic connects to the database, checks the <code class="docutils literal notranslate"><span class="pre">alembic_version</span></code> table to see which revision the database is currently at, finds any newer migration scripts (like our <code class="docutils literal notranslate"><span class="pre">add_nickname_column...</span></code> script), executes their <code class="docutils literal notranslate"><span class="pre">upgrade()</span></code> functions in order, and updates the <code class="docutils literal notranslate"><span class="pre">alembic_version</span></code> table to reflect the new state (<code class="docutils literal notranslate"><span class="pre">xxxxxxxxxxxx</span></code>). You’ll see logs indicating which revisions are being applied. Your <code class="docutils literal notranslate"><span class="pre">funds</span></code> table in the database now has the <code class="docutils literal notranslate"><span class="pre">nickname</span></code> column!</p></li>
+</ul>
+<p><strong>Step 5: (Optional) Reverting a Migration</strong></p>
+<p>If you realize you made a mistake immediately after upgrading, you can often revert the last change:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>alembic<span class="w"> </span>downgrade<span class="w"> </span>-1
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Input:</strong> This command tells Alembic to:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">downgrade</span></code>: Revert migrations.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-1</span></code>: Revert exactly one revision from the current state.</p></li>
+</ul>
+</li>
+<li><p><strong>Output:</strong> Alembic connects to the database, checks the current revision in <code class="docutils literal notranslate"><span class="pre">alembic_version</span></code>, finds the migration script corresponding to that revision, executes its <code class="docutils literal notranslate"><span class="pre">downgrade()</span></code> function, and updates the <code class="docutils literal notranslate"><span class="pre">alembic_version</span></code> table to the previous revision ID. Your <code class="docutils literal notranslate"><span class="pre">nickname</span></code> column would be removed.</p></li>
+</ul>
+</section>
+<section id="under-the-hood-how-alembic-works">
+<h2>Under the Hood: How Alembic Works<a class="headerlink" href="#under-the-hood-how-alembic-works" title="Link to this heading">#</a></h2>
+<p>Let’s visualize the <code class="docutils literal notranslate"><span class="pre">autogenerate</span></code> and <code class="docutils literal notranslate"><span class="pre">upgrade</span></code> process:</p>
+<ol class="arabic simple">
+<li><p><strong>Change Model:</strong> Developer modifies <code class="docutils literal notranslate"><span class="pre">src/models/database.py</span></code> (adds <code class="docutils literal notranslate"><span class="pre">nickname</span></code>).</p></li>
+<li><p><strong>Run <code class="docutils literal notranslate"><span class="pre">autogenerate</span></code>:</strong></p>
+<ul class="simple">
+<li><p>Alembic loads your models (<code class="docutils literal notranslate"><span class="pre">Base.metadata</span></code>).</p></li>
+<li><p>Alembic connects to the database and checks the current schema.</p></li>
+<li><p>Alembic reads the latest revision ID from the <code class="docutils literal notranslate"><span class="pre">alembic_version</span></code> table in the database.</p></li>
+<li><p>Alembic compares the models’ structure to the database structure.</p></li>
+<li><p>It detects the missing <code class="docutils literal notranslate"><span class="pre">nickname</span></code> column in the <code class="docutils literal notranslate"><span class="pre">funds</span></code> table.</p></li>
+<li><p>It generates a new Python migration script (<code class="docutils literal notranslate"><span class="pre">xxxxxxxxxxxx_...py</span></code>) with <code class="docutils literal notranslate"><span class="pre">op.add_column</span></code> in <code class="docutils literal notranslate"><span class="pre">upgrade()</span></code> and <code class="docutils literal notranslate"><span class="pre">op.drop_column</span></code> in <code class="docutils literal notranslate"><span class="pre">downgrade()</span></code>, setting <code class="docutils literal notranslate"><span class="pre">down_revision</span></code> to the previous latest ID.</p></li>
+</ul>
+</li>
+<li><p><strong>Run <code class="docutils literal notranslate"><span class="pre">upgrade</span> <span class="pre">head</span></code>:</strong></p>
+<ul class="simple">
+<li><p>Alembic connects to the database.</p></li>
+<li><p>It reads the current revision ID from the <code class="docutils literal notranslate"><span class="pre">alembic_version</span></code> table.</p></li>
+<li><p>It looks in the <code class="docutils literal notranslate"><span class="pre">alembic/versions</span></code> directory for any migration scripts with revision IDs newer than the current one.</p></li>
+<li><p>It finds <code class="docutils literal notranslate"><span class="pre">xxxxxxxxxxxx_...py</span></code>.</p></li>
+<li><p>It executes the <code class="docutils literal notranslate"><span class="pre">upgrade()</span></code> function inside <code class="docutils literal notranslate"><span class="pre">xxxxxxxxxxxx_...py</span></code>. This function uses SQLAlchemy’s <code class="docutils literal notranslate"><span class="pre">op</span></code> object to send the actual <code class="docutils literal notranslate"><span class="pre">ALTER</span> <span class="pre">TABLE</span> <span class="pre">funds</span> <span class="pre">ADD</span> <span class="pre">COLUMN</span> <span class="pre">nickname</span> <span class="pre">VARCHAR(50);</span></code> SQL command to the database.</p></li>
+<li><p>After successfully executing the <code class="docutils literal notranslate"><span class="pre">upgrade()</span></code> function, Alembic updates the <code class="docutils literal notranslate"><span class="pre">alembic_version</span></code> table to store the new revision ID (<code class="docutils literal notranslate"><span class="pre">xxxxxxxxxxxx</span></code>).</p></li>
+</ul>
+</li>
+</ol>
+<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>sequenceDiagram
+    participant Dev as Developer
+    participant Models as database.py
+    participant AlembicCLI as Alembic CLI
+    participant DBMeta as Database Schema
+    participant AlembicVer as alembic_version Table
+    participant MigrationScript as Migration Script File
+
+    Dev-&gt;&gt;Models: Add &#39;nickname&#39; column definition
+    Dev-&gt;&gt;AlembicCLI: alembic revision --autogenerate ...
+    AlembicCLI-&gt;&gt;Models: Load Base.metadata
+    AlembicCLI-&gt;&gt;DBMeta: Inspect current schema
+    AlembicCLI-&gt;&gt;AlembicVer: Get current revision ID
+    AlembicCLI-&gt;&gt;AlembicCLI: Compare Models vs DB Schema
+    AlembicCLI-&gt;&gt;MigrationScript: Generate xxxxxxxx_...py (with op.add_column)
+
+    Dev-&gt;&gt;AlembicCLI: alembic upgrade head
+    AlembicCLI-&gt;&gt;AlembicVer: Get current revision ID
+    AlembicCLI-&gt;&gt;MigrationScript: Find newer scripts (xxxxxxxx_...py)
+    AlembicCLI-&gt;&gt;MigrationScript: Execute upgrade() function
+    MigrationScript-&gt;&gt;DBMeta: Send ALTER TABLE SQL command
+    DBMeta--&gt;&gt;MigrationScript: Command successful
+    MigrationScript--&gt;&gt;AlembicCLI: upgrade() finished
+    AlembicCLI-&gt;&gt;AlembicVer: Update revision ID to xxxxxxxx
+</pre></div>
+</div>
+</section>
+<section id="diving-deeper-into-the-code">
+<h2>Diving Deeper into the Code<a class="headerlink" href="#diving-deeper-into-the-code" title="Link to this heading">#</a></h2>
+<p><strong>Configuration (<code class="docutils literal notranslate"><span class="pre">alembic/env.py</span></code>)</strong></p>
+<p>This file tells Alembic how to find your database and your models.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: alembic/env.py (Simplified)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">logging.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">fileConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">engine_from_config</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">create_engine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic</span><span class="w"> </span><span class="kn">import</span> <span class="n">context</span>
+
+<span class="c1"># --- Crucial Part 1: Tell Alembic about your models ---</span>
+<span class="c1"># Import the Base object from your models file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.models.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span>
+<span class="c1"># Set the target_metadata so Alembic knows what structure your models define</span>
+<span class="n">target_metadata</span> <span class="o">=</span> <span class="n">Base</span><span class="o">.</span><span class="n">metadata</span>
+<span class="c1"># -------------------------------------------------------</span>
+
+<span class="c1"># Import settings to get the database URL</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="c1"># --- Crucial Part 2: Tell Alembic how to connect ---</span>
+<span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">()</span>
+<span class="n">database_url</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">database_url</span> <span class="c1"># Get DB URL from config/env vars</span>
+
+<span class="c1"># Get the Alembic Config object, used in practice below</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">config</span>
+
+<span class="c1"># Set the database URL for Alembic to use</span>
+<span class="n">config</span><span class="o">.</span><span class="n">set_main_option</span><span class="p">(</span><span class="s1">&#39;sqlalchemy.url&#39;</span><span class="p">,</span> <span class="n">database_url</span><span class="p">)</span>
+<span class="c1"># ----------------------------------------------------</span>
+
+<span class="c1"># ... (Rest of the file contains functions to run migrations online/offline) ...</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">run_migrations_online</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run migrations in &#39;online&#39; mode.&quot;&quot;&quot;</span>
+    <span class="c1"># Connect to the database using the configured URL</span>
+    <span class="n">connectable</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="n">database_url</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="n">connectable</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span> <span class="k">as</span> <span class="n">connection</span><span class="p">:</span>
+        <span class="n">context</span><span class="o">.</span><span class="n">configure</span><span class="p">(</span>
+            <span class="n">connection</span><span class="o">=</span><span class="n">connection</span><span class="p">,</span>
+            <span class="c1"># Pass the target_metadata for comparison during autogenerate</span>
+            <span class="n">target_metadata</span><span class="o">=</span><span class="n">target_metadata</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="n">context</span><span class="o">.</span><span class="n">begin_transaction</span><span class="p">():</span>
+            <span class="c1"># Execute the migration steps (runs upgrade() or downgrade())</span>
+            <span class="n">context</span><span class="o">.</span><span class="n">run_migrations</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">context</span><span class="o">.</span><span class="n">is_offline_mode</span><span class="p">():</span>
+    <span class="c1"># ... (offline setup) ...</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">run_migrations_online</span><span class="p">()</span> <span class="c1"># Standard mode</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">target_metadata</span> <span class="pre">=</span> <span class="pre">Base.metadata</span></code>: This line is vital. It points Alembic to the collective structure defined by all your SQLAlchemy models that inherit from <code class="docutils literal notranslate"><span class="pre">Base</span></code>. Alembic uses this for the <code class="docutils literal notranslate"><span class="pre">autogenerate</span></code> comparison.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.set_main_option('sqlalchemy.url',</span> <span class="pre">database_url)</span></code>: This tells Alembic the address of the database it needs to connect to and modify.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">run_migrations_online</span></code> function shows how Alembic uses this information to establish a connection and configure its context, passing the <code class="docutils literal notranslate"><span class="pre">target_metadata</span></code> along.</p></li>
+</ul>
+<p><strong>Example Migration Script (<code class="docutils literal notranslate"><span class="pre">alembic/versions/add_fund_type.py</span></code>)</strong></p>
+<p>Let’s look at a slightly more complex (but still simplified) migration script provided in the project. This one adds the <code class="docutils literal notranslate"><span class="pre">fund_type</span></code> column we saw in our models earlier.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: alembic/versions/add_fund_type.py (Simplified)</span>
+<span class="sd">&quot;&quot;&quot;add fund type column</span>
+
+<span class="sd">Revision ID: 1a2b3c4d5e6f</span>
+<span class="sd">Revises: 5dde2311e9b7 # Points to the initial schema migration</span>
+<span class="sd">Create Date: 2024-03-21</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">alembic</span><span class="w"> </span><span class="kn">import</span> <span class="n">op</span> <span class="c1"># Import Alembic operations module</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sa</span> <span class="c1"># Import SQLAlchemy core components</span>
+
+<span class="c1"># revision identifiers, used by Alembic.</span>
+<span class="n">revision</span> <span class="o">=</span> <span class="s1">&#39;1a2b3c4d5e6f&#39;</span>
+<span class="n">down_revision</span> <span class="o">=</span> <span class="s1">&#39;5dde2311e9b7&#39;</span> <span class="c1"># Depends on the initial schema being present</span>
+<span class="n">branch_labels</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">depends_on</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">upgrade</span><span class="p">():</span>
+    <span class="c1"># Define the ENUM type we want to use</span>
+    <span class="n">fund_type_enum</span> <span class="o">=</span> <span class="n">sa</span><span class="o">.</span><span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;fund_of_funds&#39;</span><span class="p">,</span> <span class="s1">&#39;underlying_fund&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fund_type&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Add the column, initially allowing NULLs</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">add_column</span><span class="p">(</span><span class="s1">&#39;funds&#39;</span><span class="p">,</span>
+        <span class="n">sa</span><span class="o">.</span><span class="n">Column</span><span class="p">(</span><span class="s1">&#39;fund_type&#39;</span><span class="p">,</span> <span class="n">fund_type_enum</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># --- (Complex logic to populate the new column based on existing data - simplified here) ---</span>
+    <span class="c1"># In the real script, this uses SQL to guess the fund_type based on holdings.</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;INFO: Populating fund_type (skipping complex SQL for this example)&quot;</span><span class="p">)</span>
+    <span class="c1"># op.execute(&quot;&quot;&quot; UPDATE funds SET fund_type = ... WHERE ... &quot;&quot;&quot;) # Real script has SQL here</span>
+    <span class="c1"># -----------------------------------------------------------------------------------------</span>
+
+    <span class="c1"># Alter the column to make it NOT NULL after populating</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">alter_column</span><span class="p">(</span><span class="s1">&#39;funds&#39;</span><span class="p">,</span> <span class="s1">&#39;fund_type&#39;</span><span class="p">,</span>
+                    <span class="n">existing_type</span><span class="o">=</span><span class="n">fund_type_enum</span><span class="p">,</span>
+                    <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">downgrade</span><span class="p">():</span>
+    <span class="c1"># To revert, simply drop the column</span>
+    <span class="n">op</span><span class="o">.</span><span class="n">drop_column</span><span class="p">(</span><span class="s1">&#39;funds&#39;</span><span class="p">,</span> <span class="s1">&#39;fund_type&#39;</span><span class="p">)</span>
+    <span class="c1"># If we used a separate ENUM type, we might need to drop that too</span>
+    <span class="c1"># op.execute(&quot;DROP TYPE fund_type;&quot;) # Depending on DB</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">upgrade</span></code> function first uses <code class="docutils literal notranslate"><span class="pre">op.add_column</span></code> to add the <code class="docutils literal notranslate"><span class="pre">fund_type</span></code> column.</p></li>
+<li><p>It then might contain custom SQL (<code class="docutils literal notranslate"><span class="pre">op.execute</span></code>) or other logic to populate initial values for existing rows.</p></li>
+<li><p>Finally, it uses <code class="docutils literal notranslate"><span class="pre">op.alter_column</span></code> to enforce the <code class="docutils literal notranslate"><span class="pre">NOT</span> <span class="pre">NULL</span></code> constraint.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">downgrade</span></code> function simply uses <code class="docutils literal notranslate"><span class="pre">op.drop_column</span></code> to remove the column entirely.</p></li>
+</ul>
+<p>These migration files, stored in <code class="docutils literal notranslate"><span class="pre">alembic/versions</span></code>, create a repeatable, version-controlled history of how your database schema has evolved.</p>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h2>
+<p>You’ve now learned about Database Migrations and the Alembic tool!</p>
+<ul class="simple">
+<li><p><strong>Why it’s needed:</strong> To manage changes to your database structure (schema) safely and consistently over time, especially when working in a team or across different environments.</p></li>
+<li><p><strong>What it does:</strong> Tracks schema changes, generates migration scripts (with <code class="docutils literal notranslate"><span class="pre">upgrade</span></code> and <code class="docutils literal notranslate"><span class="pre">downgrade</span></code> instructions), applies these changes step-by-step, and allows reverting changes. Think “Git for your database schema.”</p></li>
+<li><p><strong>Key Workflow:</strong> Modify Models -&gt; <code class="docutils literal notranslate"><span class="pre">alembic</span> <span class="pre">revision</span> <span class="pre">--autogenerate</span></code> -&gt; Review Script -&gt; <code class="docutils literal notranslate"><span class="pre">alembic</span> <span class="pre">upgrade</span> <span class="pre">head</span></code>.</p></li>
+<li><p><strong>Key Components:</strong> Migration scripts (<code class="docutils literal notranslate"><span class="pre">alembic/versions/</span></code>), <code class="docutils literal notranslate"><span class="pre">alembic.ini</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">alembic/env.py</span></code> for configuration, <code class="docutils literal notranslate"><span class="pre">op</span></code> commands (<code class="docutils literal notranslate"><span class="pre">op.add_column</span></code>, <code class="docutils literal notranslate"><span class="pre">op.drop_table</span></code>, etc.) inside scripts.</p></li>
+</ul>
+<p>Alembic is an essential tool for maintaining database health and consistency throughout the lifecycle of your project. It ensures that changes to your <a class="reference internal" href="02_database_models__sqlalchemy_.html"><span class="std std-doc">Database Models (SQLAlchemy)</span></a> are reflected correctly and safely in the actual database.</p>
+<p>We’ve now covered almost all the core components of the FOFs-Capstone project! From collecting data, defining models, managing the database, loading data, providing services, using AI, and managing schema changes. But how does the application know things like the database password, API keys, or other settings?</p>
+<p><strong>Next Up:</strong> Let’s look at how the application manages configuration securely and efficiently in <a class="reference internal" href="08_application_configuration__settings_.html"><span class="std std-doc">Chapter 8: Application Configuration (Settings)</span></a>.</p>
+<hr class="docutils" />
+<p>Generated by <a class="reference external" href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="06_ai_service__geminiservice_.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 6: AI Service (GeminiService)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="08_application_configuration__settings_.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 8: Application Configuration (Settings)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-changing-the-blueprints-after-building">The Problem: Changing the Blueprints After Building</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#meet-alembic-version-control-for-your-database">Meet Alembic: Version Control for Your Database</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts-explained">Key Concepts Explained</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-use-alembic-the-workflow">How to Use Alembic: The Workflow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood-how-alembic-works">Under the Hood: How Alembic Works</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diving-deeper-into-the-code">Diving Deeper into the Code</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Austin-Z
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

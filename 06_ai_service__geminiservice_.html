@@ -1,0 +1,864 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 6: AI Service (GeminiService) &#8212; Fund of Funds Analysis</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '06_ai_service__geminiservice_';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 7: Database Migrations (Alembic)" href="07_database_migrations__alembic_.html" />
+    <link rel="prev" title="Chapter 5: Fund Service" href="05_fund_service.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Fund of Funds Analysis - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Fund of Funds Analysis - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Tutorial: FOFs-Capstone
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_data_collector__edgarcollector_.html">Chapter 1: Data Collector (EdgarCollector)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_database_models__sqlalchemy_.html">Chapter 2: Database Models (SQLAlchemy)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_database_manager.html">Chapter 3: Database Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_data_loading___management_scripts.html">Chapter 4: Data Loading &amp; Management Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_fund_service.html">Chapter 5: Fund Service</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 6: AI Service (GeminiService)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_database_migrations__alembic_.html">Chapter 7: Database Migrations (Alembic)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_application_configuration__settings_.html">Chapter 8: Application Configuration (Settings)</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/Austin-Z/FOFs-Capstone" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/Austin-Z/FOFs-Capstone/issues/new?title=Issue%20on%20page%20%2F06_ai_service__geminiservice_.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/06_ai_service__geminiservice_.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 6: AI Service (GeminiService)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-talking-to-your-data-naturally">The Problem: Talking to Your Data Naturally</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#meet-the-ai-service-geminiservice-your-smart-research-assistant">Meet the AI Service (GeminiService): Your Smart Research Assistant</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts-explained">Key Concepts Explained</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-use-the-geminiservice">How to Use the GeminiService</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood-how-does-it-answer">Under the Hood: How Does it Answer?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diving-deeper-into-the-code-src-services-gemini-service-py">Diving Deeper into the Code (<code class="docutils literal notranslate"><span class="pre">src/services/gemini_service.py</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-6-ai-service-geminiservice">
+<h1>Chapter 6: AI Service (GeminiService)<a class="headerlink" href="#chapter-6-ai-service-geminiservice" title="Link to this heading">#</a></h1>
+<p>Welcome back! In <a class="reference internal" href="05_fund_service.html"><span class="std std-doc">Chapter 5: Fund Service</span></a>, we created a convenient “helpdesk” (<code class="docutils literal notranslate"><span class="pre">FundService</span></code>) that lets other parts of our application easily ask for specific fund data (like holdings or asset allocation) without needing to know the database details.</p>
+<p>Now, imagine you have all this great, structured data about funds. How can you interact with it naturally, like asking a question in plain English? What if you want to ask something complex, like “Compare the top holdings of MDIZX and TSVPX and tell me the key differences based on their data,” and get a helpful, insightful answer?</p>
+<section id="the-problem-talking-to-your-data-naturally">
+<h2>The Problem: Talking to Your Data Naturally<a class="headerlink" href="#the-problem-talking-to-your-data-naturally" title="Link to this heading">#</a></h2>
+<p>Just having data in a database isn’t always the easiest way to explore it. Writing database queries or Python code to compare funds every time you have a question can be tedious. You might want to simply <em>ask</em> questions and get summaries or analyses.</p>
+<p>Furthermore, you want the answers to be based <em>only</em> on the specific, up-to-date data you have painstakingly collected using the <a class="reference internal" href="01_data_collector__edgarcollector_.html"><span class="std std-doc">Data Collector (EdgarCollector)</span></a> and stored using our <a class="reference internal" href="02_database_models__sqlalchemy_.html"><span class="std std-doc">Database Models (SQLAlchemy)</span></a>. You don’t want generic answers from the internet; you want insights grounded in <em>your</em> project’s data.</p>
+</section>
+<section id="meet-the-ai-service-geminiservice-your-smart-research-assistant">
+<h2>Meet the AI Service (GeminiService): Your Smart Research Assistant<a class="headerlink" href="#meet-the-ai-service-geminiservice-your-smart-research-assistant" title="Link to this heading">#</a></h2>
+<p>Think of the <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code> as a <strong>smart research assistant embedded right into our application</strong>. It’s like having a financial analyst who can:</p>
+<ol class="arabic simple">
+<li><p><strong>Understand Your Questions:</strong> It listens to your requests typed in natural English (like “Tell me about fund &#64;MDIZX” or “Show the &#64;overlap between MDIZX and TSVPX”).</p></li>
+<li><p><strong>Identify Key Topics:</strong> It spots important keywords, especially fund tickers (like <code class="docutils literal notranslate"><span class="pre">MDIZX</span></code>, <code class="docutils literal notranslate"><span class="pre">TSVPX</span></code>) or specific commands (like <code class="docutils literal notranslate"><span class="pre">&#64;overlap</span></code>).</p></li>
+<li><p><strong>Gather Evidence:</strong> It uses the <a class="reference internal" href="05_fund_service.html"><span class="std std-doc">Fund Service</span></a> (our data helpdesk) to look up the detailed, <em>current</em> information for the funds you mentioned from <em>our</em> database.</p></li>
+<li><p><strong>Consult the Expert Brain:</strong> It takes your question and the specific evidence it gathered, formats them carefully into a “prompt,” and sends it to a powerful AI brain – Google’s Gemini <strong>Large Language Model (LLM)</strong>.</p></li>
+<li><p><strong>Deliver Grounded Insights:</strong> It gets the answer back from Gemini and ensures the AI bases its response <em>only</em> on the evidence provided, not on general knowledge it might have learned elsewhere. This prevents hallucinations or outdated information.</p></li>
+</ol>
+<p>It essentially acts as a bridge between your natural language questions, your project’s specific data, and the powerful analytical capabilities of a modern AI.</p>
+</section>
+<section id="key-concepts-explained">
+<h2>Key Concepts Explained<a class="headerlink" href="#key-concepts-explained" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p><strong>Large Language Model (LLM):</strong> An AI like Google’s Gemini. It’s trained on massive amounts of text and can understand, generate, and reason about human language incredibly well. Think of it as the powerful “brain” the service consults.</p></li>
+<li><p><strong>API (Application Programming Interface):</strong> A way for computer programs to talk to each other. The <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code> uses Google’s Gemini API to send questions (prompts) and receive answers over the internet. This requires an <strong>API Key</strong> (like a secret password, stored in our <code class="docutils literal notranslate"><span class="pre">.env</span></code> file) to authenticate.</p></li>
+<li><p><strong>Context Retrieval:</strong> The process of finding the relevant background information needed to answer a question. Our <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code> does this by detecting tickers in your message and then asking the <a class="reference internal" href="05_fund_service.html"><span class="std std-doc">Fund Service</span></a> to retrieve data for those specific funds.</p></li>
+<li><p><strong>Prompt Engineering:</strong> Crafting the input (the “prompt”) for the LLM is crucial. The <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code> automatically builds a detailed prompt that includes:</p>
+<ul>
+<li><p>Clear instructions (e.g., “You are an AI assistant…”, “Answer based ONLY on the data below…”).</p></li>
+<li><p>The relevant fund data (the “context” or “evidence”) fetched by the <a class="reference internal" href="05_fund_service.html"><span class="std std-doc">Fund Service</span></a>.</p></li>
+<li><p>Your original question.</p></li>
+</ul>
+</li>
+<li><p><strong>Grounding:</strong> This is super important! It means forcing the LLM to base its answer <em>strictly</em> on the provided context (our fund data). The <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code> does this through careful prompt instructions, ensuring the AI acts like an analyst examining specific evidence, not just recalling general facts.</p></li>
+</ul>
+</section>
+<section id="how-to-use-the-geminiservice">
+<h2>How to Use the GeminiService<a class="headerlink" href="#how-to-use-the-geminiservice" title="Link to this heading">#</a></h2>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code> is quite simple from other parts of the application. You typically need a database session (to allow the service to fetch fund data) and then you call a method to get a response.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: (Example usage, e.g., in a chatbot interface)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.services.gemini_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">GeminiService</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.database.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseManager</span> <span class="c1"># To get a session</span>
+
+<span class="c1"># --- Setup (usually happens elsewhere) ---</span>
+<span class="c1"># Create a database manager instance</span>
+<span class="n">db_manager</span> <span class="o">=</span> <span class="n">DatabaseManager</span><span class="p">()</span>
+<span class="c1"># Get a session to allow data lookup</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">db_manager</span><span class="o">.</span><span class="n">get_session</span><span class="p">()</span>
+<span class="c1"># -----------------------------------------</span>
+
+<span class="c1"># Create an instance of the AI service</span>
+<span class="c1"># It automatically looks for the GEMINI_API_KEY in your .env file</span>
+<span class="n">ai_service</span> <span class="o">=</span> <span class="n">GeminiService</span><span class="p">()</span>
+
+<span class="c1"># The user&#39;s question</span>
+<span class="n">user_message</span> <span class="o">=</span> <span class="s2">&quot;Can you summarize the main investments for @MDIZX?&quot;</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Asking the AI about: &#39;</span><span class="si">{</span><span class="n">user_message</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="c1"># Ask the service to get a response for the message,</span>
+    <span class="c1"># providing the session so it can look up MDIZX data.</span>
+    <span class="n">ai_response</span> <span class="o">=</span> <span class="n">ai_service</span><span class="o">.</span><span class="n">get_response_for_single_message</span><span class="p">(</span>
+        <span class="n">message</span><span class="o">=</span><span class="n">user_message</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="n">session</span>
+    <span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">--- AI Assistant Response ---&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">ai_response</span><span class="p">)</span>
+    <span class="c1"># Expected Output: A text summary generated by Gemini,</span>
+    <span class="c1"># specifically mentioning holdings, asset types, etc., based on the</span>
+    <span class="c1"># MDIZX data fetched from *our* database via the FundService.</span>
+    <span class="c1"># It should NOT give generic info about MDIZX found online.</span>
+
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="c1"># Always close the session when finished</span>
+    <span class="n">session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Database session closed.&quot;</span><span class="p">)</span>
+
+</pre></div>
+</div>
+<p>In this example:</p>
+<ol class="arabic simple">
+<li><p>We set up the <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code> and get a <code class="docutils literal notranslate"><span class="pre">session</span></code> (as learned in <a class="reference internal" href="03_database_manager.html"><span class="std std-doc">Chapter 3</span></a>).</p></li>
+<li><p>We create an instance of <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code>. It reads the necessary <code class="docutils literal notranslate"><span class="pre">GEMINI_API_KEY</span></code> from your environment settings (see <a class="reference internal" href="08_application_configuration__settings_.html"><span class="std std-doc">Chapter 8: Application Configuration (Settings)</span></a>).</p></li>
+<li><p>We define the user’s question, including the ticker <code class="docutils literal notranslate"><span class="pre">&#64;MDIZX</span></code>.</p></li>
+<li><p>We call <code class="docutils literal notranslate"><span class="pre">ai_service.get_response_for_single_message()</span></code>, passing the message and the database <code class="docutils literal notranslate"><span class="pre">session</span></code>.</p></li>
+<li><p>The service does its magic (detects ticker, fetches data, prompts Gemini).</p></li>
+<li><p>It prints the AI’s response, which should be tailored to the data found in <em>our</em> database for MDIZX.</p></li>
+<li><p>We close the database session.</p></li>
+</ol>
+</section>
+<section id="under-the-hood-how-does-it-answer">
+<h2>Under the Hood: How Does it Answer?<a class="headerlink" href="#under-the-hood-how-does-it-answer" title="Link to this heading">#</a></h2>
+<p>Let’s trace the steps when you ask <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code> about “&#64;MDIZX”:</p>
+<ol class="arabic">
+<li><p><strong>Receive Request:</strong> The <code class="docutils literal notranslate"><span class="pre">get_response...</span></code> method gets your message (”… &#64;MDIZX …”) and the database session.</p></li>
+<li><p><strong>Detect Ticker:</strong> The service scans the message using pattern matching (regular expressions) and finds “&#64;MDIZX”. It extracts the ticker “MDIZX”.</p></li>
+<li><p><strong>Fetch Context:</strong> It uses the provided database <code class="docutils literal notranslate"><span class="pre">session</span></code> to call the <a class="reference internal" href="05_fund_service.html"><span class="std std-doc">Fund Service</span></a>’s <code class="docutils literal notranslate"><span class="pre">get_fund_data</span></code> method (or similar) for the ticker “MDIZX”.</p></li>
+<li><p><strong>Fund Service Works:</strong> The <a class="reference internal" href="05_fund_service.html"><span class="std std-doc">Fund Service</span></a> queries the database (using <a class="reference internal" href="02_database_models__sqlalchemy_.html"><span class="std std-doc">Database Models (SQLAlchemy)</span></a>) and retrieves the fund’s name, holdings, asset allocation, etc.</p></li>
+<li><p><strong>Receive Context:</strong> The <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code> gets the MDIZX data back from the <a class="reference internal" href="05_fund_service.html"><span class="std std-doc">Fund Service</span></a>.</p></li>
+<li><p><strong>(Optional) Fetch New Data:</strong> If the ticker was detected but <em>not</em> found in the database, the <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code> has logic (<code class="docutils literal notranslate"><span class="pre">fetch_and_store_new_tickers</span></code>) to try and use the <a class="reference internal" href="01_data_collector__edgarcollector_.html"><span class="std std-doc">Data Collector (EdgarCollector)</span></a> and data loading helpers (<a class="reference internal" href="04_data_loading___management_scripts.html"><span class="std std-doc">Chapter 4</span></a>) to fetch and save the data first, then proceed.</p></li>
+<li><p><strong>Format Prompt:</strong> The service constructs a detailed prompt for the Gemini AI. It looks something like this (simplified):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>SYSTEM: You are a helpful Fund of Funds AI assistant. Analyze the data provided below. Base your answer ONLY on this data. Do not use outside knowledge.
+
+REFERENCE DATA - FUND INFORMATION:
+===== FUND ANALYSIS: MDIZX =====
+📈 **MDIZX** (Meridian Small Cap Growth Fund)
+**FUND SUMMARY:**
+- Fund Type: underlying_fund
+- Filing Date: 2023-12-31
+**ASSET ALLOCATION:**
+- Equity: 95.00%
+- Cash: 5.00%
+**TOP HOLDINGS (Top 10):**
+1. Holding XYZ (XYZ): 5.50% ($...)
+2. Investment ABC (ABC): 4.20% ($...)
+... (more holdings data) ...
+
+===== USER QUESTION =====
+Can you summarize the main investments for @MDIZX?
+
+===== CRITICAL INSTRUCTION =====
+Analyze the reference data EXCLUSIVELY. Summarize MDIZX&#39;s main investments based ONLY on the holdings listed above.
+</pre></div>
+</div>
+</li>
+<li><p><strong>Call Gemini API:</strong> It sends this carefully crafted prompt over the internet to Google’s Gemini API endpoint, including the secret API key for authorization.</p></li>
+<li><p><strong>Gemini Responds:</strong> The Gemini LLM processes the prompt, focusing heavily on the “REFERENCE DATA” and the “CRITICAL INSTRUCTION,” and generates a text answer based <em>only</em> on that MDIZX data.</p></li>
+<li><p><strong>Return Response:</strong> The <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code> receives the text response from the API and returns it to your code.</p></li>
+</ol>
+<p>Here’s a simplified diagram of the flow:</p>
+<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>sequenceDiagram
+    participant UserCode as Your Code
+    participant GeminiSvc as GeminiService
+    participant FundSvc as Fund Service
+    participant DB as Database
+    participant GeminiAPI as Google Gemini API
+
+    UserCode-&gt;&gt;GeminiSvc: get_response(message=&quot;@MDIZX summary?&quot;, session)
+    GeminiSvc-&gt;&gt;GeminiSvc: Detect ticker &quot;MDIZX&quot;
+    GeminiSvc-&gt;&gt;FundSvc: get_fund_data(session, &quot;MDIZX&quot;)
+    FundSvc-&gt;&gt;DB: Query MDIZX data (using models)
+    DB--&gt;&gt;FundSvc: Return MDIZX record data
+    FundSvc--&gt;&gt;GeminiSvc: Return formatted MDIZX context data
+    GeminiSvc-&gt;&gt;GeminiSvc: Format prompt (Instructions + MDIZX Data + Question)
+    GeminiSvc-&gt;&gt;GeminiAPI: Send formatted prompt via API call
+    GeminiAPI--&gt;&gt;GeminiSvc: Return generated text response
+    GeminiSvc--&gt;&gt;UserCode: Return AI response text
+</pre></div>
+</div>
+</section>
+<section id="diving-deeper-into-the-code-src-services-gemini-service-py">
+<h2>Diving Deeper into the Code (<code class="docutils literal notranslate"><span class="pre">src/services/gemini_service.py</span></code>)<a class="headerlink" href="#diving-deeper-into-the-code-src-services-gemini-service-py" title="Link to this heading">#</a></h2>
+<p>Let’s peek at some key parts of the <code class="docutils literal notranslate"><span class="pre">src/services/gemini_service.py</span></code> file.</p>
+<p><strong>1. Initialization:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/services/gemini_service.py (Simplified)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.utils.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GeminiService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Gemini service.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span><span class="s1">&#39;gemini_service&#39;</span><span class="p">)</span>
+        <span class="n">load_dotenv</span><span class="p">()</span> <span class="c1"># Load .env file for secrets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s1">&#39;GEMINI_API_KEY&#39;</span><span class="p">)</span> <span class="c1"># Get the key</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;GEMINI_API_KEY not found!&quot;</span><span class="p">)</span>
+        <span class="c1"># Define the URL for the Gemini API</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_url</span> <span class="o">=</span> <span class="s2">&quot;https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>When you create <code class="docutils literal notranslate"><span class="pre">GeminiService()</span></code>, it immediately loads environment variables using <code class="docutils literal notranslate"><span class="pre">load_dotenv()</span></code>.</p></li>
+<li><p>It fetches the crucial <code class="docutils literal notranslate"><span class="pre">GEMINI_API_KEY</span></code> needed to talk to Google’s service. You must have this key defined in your <code class="docutils literal notranslate"><span class="pre">.env</span></code> file (see <a class="reference internal" href="08_application_configuration__settings_.html"><span class="std std-doc">Chapter 8</span></a>).</p></li>
+<li><p>It stores the API endpoint URL.</p></li>
+</ul>
+<p><strong>2. Detecting Tickers:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/services/gemini_service.py (Simplified)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Set</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GeminiService</span><span class="p">:</span>
+    <span class="c1"># ... (init) ...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">detect_tickers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Detects potential fund tickers (like @ABCDE or FGHIJ) in text.&quot;&quot;&quot;</span>
+        <span class="c1"># Pattern for @TICKER mentions</span>
+        <span class="n">mention_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;@([A-Z]{1,5}(?:\.[A-Z]{1,2})?)\b&#39;</span>
+        <span class="c1"># Pattern for general uppercase tickers (1-5 letters)</span>
+        <span class="n">ticker_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;\b[A-Z]{1,5}(?:\.[A-Z]{1,2})?\b&#39;</span>
+
+        <span class="n">explicit_mentions</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">mention_pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+        <span class="c1"># Prioritize explicit @mentions if found</span>
+        <span class="k">if</span> <span class="n">explicit_mentions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detected explicit mentions: </span><span class="si">{</span><span class="n">explicit_mentions</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">explicit_mentions</span>
+
+        <span class="n">potential_tickers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">ticker_pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+        <span class="c1"># Filter out common English words mistaken for tickers</span>
+        <span class="n">common_words</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;I&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;AN&#39;</span><span class="p">,</span> <span class="s1">&#39;THE&#39;</span><span class="p">,</span> <span class="s1">&#39;AND&#39;</span><span class="p">,</span> <span class="s1">&#39;OR&#39;</span><span class="p">,</span> <span class="s1">&#39;BUT&#39;</span><span class="p">,</span> <span class="s1">&#39;IF&#39;</span><span class="p">}</span>
+        <span class="n">filtered_tickers</span> <span class="o">=</span> <span class="n">potential_tickers</span> <span class="o">-</span> <span class="n">common_words</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Detected potential tickers: </span><span class="si">{</span><span class="n">filtered_tickers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">filtered_tickers</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This method uses <strong>regular expressions (<code class="docutils literal notranslate"><span class="pre">re</span></code>)</strong> – a way to define text patterns.</p></li>
+<li><p>It looks for patterns like <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> followed by 1-5 uppercase letters (<code class="docutils literal notranslate"><span class="pre">mention_pattern</span></code>) or just standalone 1-5 uppercase letter words (<code class="docutils literal notranslate"><span class="pre">ticker_pattern</span></code>).</p></li>
+<li><p>It includes basic filtering to avoid matching common words like “A” or “I”.</p></li>
+</ul>
+<p><strong>3. Enhancing the Message with Fund Data:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/services/gemini_service.py (Simplified)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Set</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.services.fund_service</span><span class="w"> </span><span class="kn">import</span> <span class="n">FundService</span> <span class="c1"># Needs FundService</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GeminiService</span><span class="p">:</span>
+    <span class="c1"># ... (init, detect_tickers) ...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">enhance_message_with_fund_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Looks for tickers, fetches data, and builds the enhanced prompt.&quot;&quot;&quot;</span>
+        <span class="n">potential_tickers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">detect_tickers</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+        <span class="c1"># ... (Code to check which tickers are valid in our DB) ...</span>
+        <span class="c1"># ... (Code to call self.fetch_and_store_new_tickers if needed) ...</span>
+        <span class="n">valid_tickers</span> <span class="o">=</span> <span class="n">potential_tickers</span> <span class="c1"># Simplified assumption</span>
+
+        <span class="n">fund_data_sections</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">valid_tickers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fetching data for: </span><span class="si">{</span><span class="n">valid_tickers</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">ticker</span> <span class="ow">in</span> <span class="n">valid_tickers</span><span class="p">:</span>
+                <span class="c1"># Use FundService to get data (requires session)</span>
+                <span class="n">fund_data</span> <span class="o">=</span> <span class="n">FundService</span><span class="o">.</span><span class="n">get_fund_data</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">ticker</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">fund_data</span><span class="p">:</span>
+                    <span class="c1"># Format the data into a nice string for the prompt</span>
+                    <span class="n">formatted_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_fund_data_for_prompt</span><span class="p">(</span><span class="n">fund_data</span><span class="p">)</span>
+                    <span class="n">fund_data_sections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">formatted_data</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">fund_data_sections</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">message</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">set</span><span class="p">()</span> <span class="c1"># No enhancement needed</span>
+
+        <span class="c1"># Construct the final prompt string with instructions, data, and question</span>
+        <span class="n">prompt_parts</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;SYSTEM INSTRUCTION: Base your answer ONLY on the data provided below.&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;===== REFERENCE DATA =====&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fund_data_sections</span><span class="p">),</span> <span class="c1"># Insert the fetched data</span>
+            <span class="s2">&quot;===== USER QUESTION =====&quot;</span><span class="p">,</span>
+            <span class="n">message</span><span class="p">,</span> <span class="c1"># Original user message</span>
+            <span class="s2">&quot;===== CRITICAL INSTRUCTION: Analyze the REFERENCE DATA...&quot;</span>
+        <span class="p">]</span>
+        <span class="n">enhanced_prompt</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prompt_parts</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">enhanced_prompt</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">valid_tickers</span> <span class="c1"># Return enhanced prompt &amp; status</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This is a key orchestrator method. It calls <code class="docutils literal notranslate"><span class="pre">detect_tickers</span></code>.</p></li>
+<li><p>It interacts with the <a class="reference internal" href="05_fund_service.html"><span class="std std-doc">Fund Service</span></a> (<code class="docutils literal notranslate"><span class="pre">FundService.get_fund_data</span></code>) to fetch the context for valid tickers found in our database.</p></li>
+<li><p>It calls another helper (<code class="docutils literal notranslate"><span class="pre">format_fund_data_for_prompt</span></code>) to turn the raw fund data into a readable text block.</p></li>
+<li><p>Crucially, it assembles the <code class="docutils literal notranslate"><span class="pre">enhanced_prompt</span></code> string by combining the system instructions, the fetched data (“REFERENCE DATA”), the original user question, and the final critical instructions.</p></li>
+</ul>
+<p><strong>4. Getting the Response from the API:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/services/gemini_service.py (Simplified)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span> <span class="c1"># Needs requests library: pip install requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GeminiService</span><span class="p">:</span>
+    <span class="c1"># ... (init, enhance_message_with_fund_data) ...</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">messages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]],</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Sends prompt to Gemini API and returns the response text.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Error: Gemini API key not configured.&quot;</span>
+
+        <span class="c1"># --- Enhance the last message if needed ---</span>
+        <span class="n">last_message_content</span> <span class="o">=</span> <span class="n">messages</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;content&#39;</span><span class="p">]</span>
+        <span class="n">enhanced_prompt</span><span class="p">,</span> <span class="n">was_enhanced</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enhance_message_with_fund_data</span><span class="p">(</span>
+            <span class="n">session</span><span class="p">,</span> <span class="n">last_message_content</span><span class="p">,</span> <span class="o">...</span>
+        <span class="p">)</span>
+        <span class="c1"># Use the enhanced prompt if enhancement happened</span>
+        <span class="n">prompt_to_send</span> <span class="o">=</span> <span class="n">enhanced_prompt</span> <span class="k">if</span> <span class="n">was_enhanced</span> <span class="k">else</span> <span class="n">last_message_content</span>
+
+        <span class="c1"># --- Prepare API Request ---</span>
+        <span class="c1"># Structure the request payload according to Gemini API requirements</span>
+        <span class="c1"># (Simplified - actual payload structure is more complex for conversations)</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;contents&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;role&quot;</span><span class="p">:</span> <span class="s2">&quot;user&quot;</span><span class="p">,</span> <span class="s2">&quot;parts&quot;</span><span class="p">:</span> <span class="p">[{</span><span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">prompt_to_send</span><span class="p">}]}]</span>
+        <span class="p">}</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/json&quot;</span><span class="p">}</span>
+        <span class="n">api_call_url</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">api_url</span><span class="si">}</span><span class="s2">?key=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="c1"># --- Make API Call and Handle Response ---</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">api_call_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">payload</span><span class="p">))</span>
+            <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span> <span class="c1"># Check for HTTP errors (like 401 Unauthorized)</span>
+
+            <span class="n">response_json</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+            <span class="c1"># Extract the text response (path might vary slightly based on API version)</span>
+            <span class="k">return</span> <span class="n">response_json</span><span class="p">[</span><span class="s2">&quot;candidates&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;content&quot;</span><span class="p">][</span><span class="s2">&quot;parts&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;text&quot;</span><span class="p">]</span>
+
+        <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;API Request failed: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Sorry, network error communicating with AI: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error processing Gemini response: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="c1"># Catch other potential errors (e.g., malformed JSON)</span>
+            <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Sorry, an unexpected error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This method takes the conversation history (<code class="docutils literal notranslate"><span class="pre">messages</span></code>).</p></li>
+<li><p>It calls <code class="docutils literal notranslate"><span class="pre">enhance_message_with_fund_data</span></code> to potentially enrich the <em>last</em> user message with context.</p></li>
+<li><p>It constructs the JSON <code class="docutils literal notranslate"><span class="pre">payload</span></code> required by the Gemini API, including the final prompt content.</p></li>
+<li><p>It uses the <code class="docutils literal notranslate"><span class="pre">requests</span></code> library to send a POST request to the <code class="docutils literal notranslate"><span class="pre">api_call_url</span></code>, including the headers and the JSON payload.</p></li>
+<li><p>It checks the response status and parses the returned JSON to extract the AI-generated text.</p></li>
+<li><p>It includes error handling for network issues or unexpected API responses.</p></li>
+</ul>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h2>
+<p>You’ve now met the <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code>, our project’s intelligent research assistant! You learned:</p>
+<ul class="simple">
+<li><p><strong>Why it’s useful:</strong> It allows natural language interaction with our specific fund data, providing grounded, AI-driven insights.</p></li>
+<li><p><strong>How it works:</strong> It detects user intent (tickers, keywords), fetches relevant evidence using the <a class="reference internal" href="05_fund_service.html"><span class="std std-doc">Fund Service</span></a>, engineers a detailed prompt for the Google Gemini LLM, and gets a response based <em>only</em> on that evidence.</p></li>
+<li><p><strong>Key Concepts:</strong> LLMs, APIs, Prompt Engineering, Context Retrieval, and crucial <strong>Grounding</strong>.</p></li>
+<li><p><strong>How to use it:</strong> Create an instance, provide a database session, and call <code class="docutils literal notranslate"><span class="pre">get_response</span></code> or <code class="docutils literal notranslate"><span class="pre">get_response_for_single_message</span></code>.</p></li>
+</ul>
+<p>This service adds a powerful layer of intelligent analysis on top of our collected and structured data.</p>
+<p>Our project now has data collection, database storage, data loading, a service layer for access, and even an AI layer. But what happens when we need to change our database structure <em>after</em> we’ve already created it and loaded data? How do we manage updates to our database blueprints (<a class="reference internal" href="02_database_models__sqlalchemy_.html"><span class="std std-doc">Database Models (SQLAlchemy)</span></a>) safely?</p>
+<p><strong>Next Up:</strong> Let’s learn how to handle changes to our database schema over time using a tool called Alembic in <a class="reference internal" href="07_database_migrations__alembic_.html"><span class="std std-doc">Chapter 7: Database Migrations (Alembic)</span></a>.</p>
+<hr class="docutils" />
+<p>Generated by <a class="reference external" href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="05_fund_service.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 5: Fund Service</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="07_database_migrations__alembic_.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 7: Database Migrations (Alembic)</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-talking-to-your-data-naturally">The Problem: Talking to Your Data Naturally</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#meet-the-ai-service-geminiservice-your-smart-research-assistant">Meet the AI Service (GeminiService): Your Smart Research Assistant</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts-explained">Key Concepts Explained</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-use-the-geminiservice">How to Use the GeminiService</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood-how-does-it-answer">Under the Hood: How Does it Answer?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diving-deeper-into-the-code-src-services-gemini-service-py">Diving Deeper into the Code (<code class="docutils literal notranslate"><span class="pre">src/services/gemini_service.py</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Austin-Z
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
