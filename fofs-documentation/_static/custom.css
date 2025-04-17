@@ -1,0 +1,53 @@
+/* Custom CSS for Mermaid diagrams */
+.mermaid {
+  text-align: center;
+  background-color: #f8f9fa;
+  padding: 15px;
+  border-radius: 5px;
+  margin: 20px 0;
+}
+
+/* Make sure diagrams are visible in dark mode */
+html[data-theme="dark"] .mermaid {
+  background-color: #2d333b;
+  color: #adbac7;
+}
+
+/* Improve code block styling */
+pre {
+  border-radius: 5px;
+  padding: 15px;
+}
+
+/* Improve flowchart styling */
+.mermaid .flowchart-link {
+  stroke: #0366d6 !important;
+  stroke-width: 2px !important;
+}
+
+.mermaid .marker {
+  fill: #0366d6 !important;
+}
+
+/* Sequence diagram styling */
+.mermaid .actor {
+  fill: #f1f8ff !important;
+  stroke: #0366d6 !important;
+}
+
+.mermaid .messageLine0 {
+  stroke: #0366d6 !important;
+  stroke-width: 1.5px !important;
+}
+
+/* Class diagram styling */
+.mermaid .classGroup rect {
+  fill: #f1f8ff !important;
+  stroke: #0366d6 !important;
+}
+
+/* Entity Relationship diagram styling */
+.mermaid .entityBox {
+  fill: #f1f8ff !important;
+  stroke: #0366d6 !important;
+}

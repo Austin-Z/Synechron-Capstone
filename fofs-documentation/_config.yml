@@ -30,6 +30,11 @@ repository:
 html:
   use_issues_button: true
   use_repository_button: true
+  extra_css:
+    - _static/custom.css
+  extra_javascript:
+    - https://cdn.jsdelivr.net/npm/mermaid@9.1.7/dist/mermaid.min.js
+    - _static/mermaid-init.js
 
 # Add Mermaid support for diagrams
 sphinx:
@@ -37,3 +42,17 @@ sphinx:
     - sphinxcontrib.mermaid
   config:
     mermaid_version: latest
+    html_js_files:
+      - https://cdn.jsdelivr.net/npm/mermaid@latest/dist/mermaid.min.js
+
+# Add MyST extensions for enhanced markdown support
+myst_enable_extensions:
+  - colon_fence
+  - deflist
+  - html_image
+  - linkify
+  - substitution
+  - tasklist
+
+# Enable rendering of Mermaid diagrams
+myst_mermaid_enable: true
