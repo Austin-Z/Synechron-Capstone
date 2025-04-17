@@ -51,3 +51,30 @@ pre {
   fill: #f1f8ff !important;
   stroke: #0366d6 !important;
 }
+
+/* Hide right sidebar and maximize content area */
+.bd-toc {
+  display: none !important;
+}
+
+.bd-main .bd-content {
+  max-width: 100% !important;
+  flex-grow: 1 !important;
+}
+
+.bd-article-container {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* Improve content width */
+.bd-main .bd-content .bd-article-container {
+  max-width: 1200px !important;
+  margin: 0 auto !important;
+}
+
+/* Make diagrams responsive */
+.mermaid svg {
+  max-width: 100% !important;
+  height: auto !important;
+}

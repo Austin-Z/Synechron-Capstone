@@ -36,6 +36,25 @@ html:
     - https://cdn.jsdelivr.net/npm/mermaid@9.1.7/dist/mermaid.min.js
     - _static/mermaid-init.js
     - _static/auto-mermaid.js
+  extra_footer: ''
+  home_page_in_navbar: true
+  baseurl: ''
+  comments:
+    hypothesis: false
+    utterances: false
+
+# Hide the right sidebar table of contents
+html_theme_options:
+  use_download_button: true
+  use_fullscreen_button: true
+  use_repository_button: true
+  use_issues_button: true
+  home_page_in_toc: true
+  toc_title: "On this page"
+  show_toc_level: 2
+  extra_navbar: ""
+  show_navbar_depth: 2
+  show_toc: false
 
 # Add Mermaid support for diagrams
 sphinx:
