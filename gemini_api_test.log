@@ -1,0 +1,16 @@
+2025-04-17 14:29:24,774 - gemini_api_test - INFO - Testing Gemini API request with @MDIZX mention...
+2025-04-17 14:29:24,794 - gemini_service - INFO - GEMINI_API_KEY found: AIzaS...
+2025-04-17 14:29:24,794 - gemini_service - INFO - Detected potential tickers: {'MDIZX'}
+2025-04-17 14:29:24,811 - gemini_service - INFO - Looking up underlying securities for MRSKX
+2025-04-17 14:29:24,813 - gemini_service - INFO - Looking up underlying securities for MEMJX
+2025-04-17 14:29:24,815 - gemini_service - INFO - Looking up underlying securities for MKVHX
+2025-04-17 14:29:24,817 - gemini_service - INFO - Looking up underlying securities for MINJX
+2025-04-17 14:29:24,821 - gemini_service - INFO - Looking up underlying securities for MGRDX
+2025-04-17 14:29:24,854 - gemini_service - INFO - Looking up underlying securities for MIDLX
+2025-04-17 14:29:24,858 - gemini_service - INFO - Enhanced message with data for tickers: {'MDIZX'}
+2025-04-17 14:29:24,858 - gemini_api_test - INFO - Message was enhanced with fund data
+2025-04-17 14:29:24,858 - gemini_api_test - INFO - Data that would be sent to Gemini API:
+2025-04-17 14:29:24,859 - gemini_api_test - INFO - Formatted messages written to gemini_formatted_messages.json
+2025-04-17 14:29:24,859 - gemini_api_test - INFO - API payload written to gemini_api_payload.json
+2025-04-17 14:29:24,860 - gemini_api_test - INFO - Response: TEST RESPONSE - Not actually calling Gemini API
+2025-04-17 14:29:24,860 - gemini_api_test - INFO - Test complete. Check gemini_formatted_messages.json and gemini_api_payload.json for details.

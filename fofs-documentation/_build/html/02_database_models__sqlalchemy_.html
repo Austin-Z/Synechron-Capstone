@@ -1,0 +1,753 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 2: Database Models (SQLAlchemy) &#8212; Fund of Funds Analysis</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '02_database_models__sqlalchemy_';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 3: Database Manager" href="03_database_manager.html" />
+    <link rel="prev" title="Chapter 1: Data Collector (EdgarCollector)" href="01_data_collector__edgarcollector_.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Fund of Funds Analysis - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Fund of Funds Analysis - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Tutorial: FOFs-Capstone
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_data_collector__edgarcollector_.html">Chapter 1: Data Collector (EdgarCollector)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 2: Database Models (SQLAlchemy)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_database_manager.html">Chapter 3: Database Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_data_loading___management_scripts.html">Chapter 4: Data Loading &amp; Management Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_fund_service.html">Chapter 5: Fund Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_ai_service__geminiservice_.html">Chapter 6: AI Service (GeminiService)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_database_migrations__alembic_.html">Chapter 7: Database Migrations (Alembic)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_application_configuration__settings_.html">Chapter 8: Application Configuration (Settings)</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/Austin-Z/FOFs-Capstone" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/Austin-Z/FOFs-Capstone/issues/new?title=Issue%20on%20page%20%2F02_database_models__sqlalchemy_.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/02_database_models__sqlalchemy_.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 2: Database Models (SQLAlchemy)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-from-raw-data-to-organized-knowledge">The Problem: From Raw Data to Organized Knowledge</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#meet-the-blueprints-our-database-models">Meet the Blueprints: Our Database Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-our-blueprints-with-sqlalchemy">Defining Our Blueprints with SQLAlchemy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-it-works-from-python-class-to-database-table">How It Works: From Python Class to Database Table</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood-sqlalchemy-s-magic">Under the Hood: SQLAlchemy’s Magic</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-2-database-models-sqlalchemy">
+<h1>Chapter 2: Database Models (SQLAlchemy)<a class="headerlink" href="#chapter-2-database-models-sqlalchemy" title="Link to this heading">#</a></h1>
+<p>Welcome back! In <a class="reference internal" href="01_data_collector__edgarcollector_.html"><span class="std std-doc">Chapter 1: Data Collector (EdgarCollector)</span></a>, we learned how our <code class="docutils literal notranslate"><span class="pre">EdgarCollector</span></code> acts like a researcher, grabbing raw financial data (like fund holdings) from the SEC EDGAR database and saving it, often as simple CSV files.</p>
+<section id="the-problem-from-raw-data-to-organized-knowledge">
+<h2>The Problem: From Raw Data to Organized Knowledge<a class="headerlink" href="#the-problem-from-raw-data-to-organized-knowledge" title="Link to this heading">#</a></h2>
+<p>Imagine you have a pile of notes (our CSV files) from your research. Each note contains details about a fund’s holdings on a specific date. Now, you want to ask questions like:</p>
+<ul class="simple">
+<li><p>“Show me all the holdings for fund ‘MDIZX’ from its latest filing.”</p></li>
+<li><p>“Which funds hold shares of Apple (‘AAPL’)?”</p></li>
+<li><p>“Find all the ‘Fund of Funds’ – funds that mainly invest in other funds.”</p></li>
+</ul>
+<p>Just having separate CSV files makes answering these questions difficult. You’d have to manually open files, search through them, and piece things together. It’s inefficient and prone to errors.</p>
+<p>We need a way to store this data <em>structurally</em>, like organizing those notes into labeled file folders inside specific drawers in a filing cabinet. This way, we know exactly where to look for information about funds, their filings over time, and the specific investments (holdings) within each filing.</p>
+<p>This is where <strong>Database Models</strong> come in.</p>
+</section>
+<section id="meet-the-blueprints-our-database-models">
+<h2>Meet the Blueprints: Our Database Models<a class="headerlink" href="#meet-the-blueprints-our-database-models" title="Link to this heading">#</a></h2>
+<p>Think of Database Models as <strong>detailed blueprints</strong> for organizing information in our database. Just like a builder needs blueprints to construct a house correctly, we need models to build our database tables correctly.</p>
+<p>In our project, we use a powerful Python tool called <strong>SQLAlchemy</strong>. It helps us define these blueprints using familiar Python code (classes) instead of writing complex database commands directly.</p>
+<p><strong>Key Ideas:</strong></p>
+<ol class="arabic simple">
+<li><p><strong>SQLAlchemy:</strong> A popular Python library that acts as a translator. It lets us work with databases using Python objects and methods, translating our actions into the specific language the database understands (SQL).</p></li>
+<li><p><strong>Models:</strong> These are Python classes we define (like <code class="docutils literal notranslate"><span class="pre">Fund</span></code>, <code class="docutils literal notranslate"><span class="pre">Filing</span></code>, <code class="docutils literal notranslate"><span class="pre">Holding</span></code>). Each class represents a specific <em>type</em> of information we want to store.</p></li>
+<li><p><strong>Tables:</strong> SQLAlchemy uses our model classes to create corresponding tables in the actual database. If the <code class="docutils literal notranslate"><span class="pre">Fund</span></code> model is the blueprint, the <code class="docutils literal notranslate"><span class="pre">funds</span></code> table in the database is the actual structure built from that blueprint.</p></li>
+<li><p><strong>Columns:</strong> Inside each model class, we define attributes that correspond to columns in the database table. For example, our <code class="docutils literal notranslate"><span class="pre">Fund</span></code> model might have columns for <code class="docutils literal notranslate"><span class="pre">ticker</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, and <code class="docutils literal notranslate"><span class="pre">fund_type</span></code>.</p></li>
+<li><p><strong>Data Types:</strong> We specify what kind of data each column should hold (e.g., <code class="docutils literal notranslate"><span class="pre">String</span></code> for text like a ticker, <code class="docutils literal notranslate"><span class="pre">Integer</span></code> for whole numbers like an ID, <code class="docutils literal notranslate"><span class="pre">Float</span></code> for decimal numbers like a holding’s value, <code class="docutils literal notranslate"><span class="pre">DateTime</span></code> for dates). This ensures data consistency.</p></li>
+<li><p><strong>Relationships:</strong> This is a crucial part! Models define how different tables are connected. For example, a <code class="docutils literal notranslate"><span class="pre">Filing</span></code> record belongs to one specific <code class="docutils literal notranslate"><span class="pre">Fund</span></code>, and each <code class="docutils literal notranslate"><span class="pre">Holding</span></code> record belongs to one specific <code class="docutils literal notranslate"><span class="pre">Filing</span></code>. SQLAlchemy helps us define and manage these connections easily.</p></li>
+</ol>
+</section>
+<section id="defining-our-blueprints-with-sqlalchemy">
+<h2>Defining Our Blueprints with SQLAlchemy<a class="headerlink" href="#defining-our-blueprints-with-sqlalchemy" title="Link to this heading">#</a></h2>
+<p>Let’s look at how we define these blueprints in our code, using simplified examples from <code class="docutils literal notranslate"><span class="pre">src/models/database.py</span></code>.</p>
+<p><strong>1. The <code class="docutils literal notranslate"><span class="pre">Fund</span></code> Blueprint:</strong></p>
+<p>This model defines how we store basic information about each mutual fund.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/models/database.py (Simplified)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Enum</span><span class="p">,</span> <span class="n">DateTime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">declarative_base</span><span class="p">,</span> <span class="n">relationship</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="c1"># Base class for all our models</span>
+<span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Fund</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Blueprint for the &#39;funds&#39; table.&quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;funds&#39;</span> <span class="c1"># The actual table name in the database</span>
+
+    <span class="c1"># Define the columns (like fields in a spreadsheet)</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># Unique ID for each fund</span>
+    <span class="n">ticker</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># Fund ticker (e.g., &#39;MDIZX&#39;)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># Full name of the fund</span>
+    <span class="n">fund_type</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Enum</span><span class="p">(</span><span class="s1">&#39;fund_of_funds&#39;</span><span class="p">,</span> <span class="s1">&#39;underlying_fund&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;fund_type&#39;</span><span class="p">))</span> <span class="c1"># Type of fund</span>
+
+    <span class="c1"># Define the relationship: A Fund can have many Filings</span>
+    <span class="n">filings</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Filing&quot;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;fund&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> <span class="c1"># How to represent a Fund object when printed</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;Fund(ticker=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ticker</span><span class="si">}</span><span class="s2">&#39;, name=&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;)&gt;&quot;</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Base</span> <span class="pre">=</span> <span class="pre">declarative_base()</span></code>: We start by creating a <code class="docutils literal notranslate"><span class="pre">Base</span></code> class provided by SQLAlchemy. All our models will inherit from this.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Fund(Base):</span></code>: We define our <code class="docutils literal notranslate"><span class="pre">Fund</span></code> model as a Python class inheriting from <code class="docutils literal notranslate"><span class="pre">Base</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">__tablename__</span> <span class="pre">=</span> <span class="pre">'funds'</span></code>: This explicitly tells SQLAlchemy that this class maps to a database table named <code class="docutils literal notranslate"><span class="pre">funds</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">id</span> <span class="pre">=</span> <span class="pre">Column(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">ticker</span> <span class="pre">=</span> <span class="pre">Column(...)</span></code>, etc.: These lines define the columns in the <code class="docutils literal notranslate"><span class="pre">funds</span></code> table. We specify the data type (<code class="docutils literal notranslate"><span class="pre">Integer</span></code>, <code class="docutils literal notranslate"><span class="pre">String</span></code>, <code class="docutils literal notranslate"><span class="pre">Enum</span></code>) and constraints (<code class="docutils literal notranslate"><span class="pre">primary_key=True</span></code>, <code class="docutils literal notranslate"><span class="pre">unique=True</span></code>, <code class="docutils literal notranslate"><span class="pre">nullable=False</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">filings</span> <span class="pre">=</span> <span class="pre">relationship(...)</span></code>: This is crucial! It tells SQLAlchemy that a <code class="docutils literal notranslate"><span class="pre">Fund</span></code> object is related to <code class="docutils literal notranslate"><span class="pre">Filing</span></code> objects. The <code class="docutils literal notranslate"><span class="pre">back_populates=&quot;fund&quot;</span></code> part links it back to a corresponding relationship defined in the <code class="docutils literal notranslate"><span class="pre">Filing</span></code> model, creating a two-way connection.</p></li>
+</ul>
+<p><strong>2. The <code class="docutils literal notranslate"><span class="pre">Filing</span></code> Blueprint:</strong></p>
+<p>This model represents the metadata for a specific NPORT filing submitted by a fund.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/models/database.py (Simplified)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForeignKey</span><span class="p">,</span> <span class="n">UniqueConstraint</span> <span class="c1"># Import necessary types</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Filing</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Blueprint for the &#39;filings&#39; table.&quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;filings&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Link to the &#39;funds&#39; table: Each filing belongs to ONE fund.</span>
+    <span class="n">fund_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;funds.id&#39;</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">filing_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">DateTime</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># When the report was filed</span>
+    <span class="n">period_end_date</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">DateTime</span><span class="p">,</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="c1"># The date the holdings data is for</span>
+
+    <span class="c1"># Define relationships</span>
+    <span class="c1"># Link back to the Fund model</span>
+    <span class="n">fund</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Fund&quot;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;filings&quot;</span><span class="p">)</span>
+    <span class="c1"># A Filing can have many Holdings</span>
+    <span class="n">holdings</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Holding&quot;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;filing&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Prevent duplicate filings for the same fund and period</span>
+    <span class="n">__table_args__</span> <span class="o">=</span> <span class="p">(</span><span class="n">UniqueConstraint</span><span class="p">(</span><span class="s1">&#39;fund_id&#39;</span><span class="p">,</span> <span class="s1">&#39;period_end_date&#39;</span><span class="p">),)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fund_id</span> <span class="pre">=</span> <span class="pre">Column(Integer,</span> <span class="pre">ForeignKey('funds.id'),</span> <span class="pre">...)</span></code>: This is the <strong>foreign key</strong>. It’s a column in the <code class="docutils literal notranslate"><span class="pre">filings</span></code> table that stores the <code class="docutils literal notranslate"><span class="pre">id</span></code> of the <code class="docutils literal notranslate"><span class="pre">Fund</span></code> this filing belongs to. It physically links the <code class="docutils literal notranslate"><span class="pre">filings</span></code> table back to the <code class="docutils literal notranslate"><span class="pre">funds</span></code> table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fund</span> <span class="pre">=</span> <span class="pre">relationship(&quot;Fund&quot;,</span> <span class="pre">...)</span></code>: This complements the <code class="docutils literal notranslate"><span class="pre">ForeignKey</span></code>. It allows us to easily access the related <code class="docutils literal notranslate"><span class="pre">Fund</span></code> object directly from a <code class="docutils literal notranslate"><span class="pre">Filing</span></code> object in our Python code (e.g., <code class="docutils literal notranslate"><span class="pre">my_filing.fund</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">holdings</span> <span class="pre">=</span> <span class="pre">relationship(&quot;Holding&quot;,</span> <span class="pre">...)</span></code>: Similarly, this defines that one <code class="docutils literal notranslate"><span class="pre">Filing</span></code> can contain many <code class="docutils literal notranslate"><span class="pre">Holding</span></code> records.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">__table_args__</span> <span class="pre">=</span> <span class="pre">(UniqueConstraint(...),)</span></code>: This adds a database rule: you cannot have two rows in the <code class="docutils literal notranslate"><span class="pre">filings</span></code> table with the same <code class="docutils literal notranslate"><span class="pre">fund_id</span></code> and <code class="docutils literal notranslate"><span class="pre">period_end_date</span></code>.</p></li>
+</ul>
+<p><strong>3. The <code class="docutils literal notranslate"><span class="pre">Holding</span></code> Blueprint:</strong></p>
+<p>This model defines the structure for storing each individual investment (stock, bond, other fund) listed within a filing.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/models/database.py (Simplified)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Holding</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Blueprint for the &#39;holdings&#39; table.&quot;&quot;&quot;</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;holdings&#39;</span>
+
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># Link to the &#39;filings&#39; table: Each holding belongs to ONE filing.</span>
+    <span class="n">filing_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;filings.id&#39;</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">cusip</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">9</span><span class="p">))</span> <span class="c1"># Investment identifier</span>
+    <span class="n">ticker</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span> <span class="c1"># Investment ticker (e.g., &#39;AAPL&#39;)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">255</span><span class="p">))</span> <span class="c1"># Name of the investment</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span> <span class="c1"># Market value of the holding</span>
+    <span class="n">percentage</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">)</span> <span class="c1"># Percentage of the fund&#39;s assets</span>
+    <span class="n">asset_type</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span> <span class="c1"># Type of asset (e.g., &#39;Equity&#39;, &#39;Gov Bond&#39;)</span>
+
+    <span class="c1"># Link back to the Filing model</span>
+    <span class="n">filing</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Filing&quot;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;holdings&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Again, we see a <code class="docutils literal notranslate"><span class="pre">ForeignKey('filings.id')</span></code> linking each <code class="docutils literal notranslate"><span class="pre">Holding</span></code> record back to the specific <code class="docutils literal notranslate"><span class="pre">Filing</span></code> it came from.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">relationship(&quot;Filing&quot;,</span> <span class="pre">...)</span></code> allows us to navigate from a <code class="docutils literal notranslate"><span class="pre">Holding</span></code> object back to its parent <code class="docutils literal notranslate"><span class="pre">Filing</span></code> object (e.g., <code class="docutils literal notranslate"><span class="pre">my_holding.filing</span></code>).</p></li>
+</ul>
+<p>We also have a <code class="docutils literal notranslate"><span class="pre">FundRelationship</span></code> model (see <code class="docutils literal notranslate"><span class="pre">src/models/database.py</span></code>) specifically designed to track when one fund (the parent) holds another fund (the child) as part of its investments, which is key for analyzing Funds of Funds.</p>
+</section>
+<section id="how-it-works-from-python-class-to-database-table">
+<h2>How It Works: From Python Class to Database Table<a class="headerlink" href="#how-it-works-from-python-class-to-database-table" title="Link to this heading">#</a></h2>
+<p>You don’t usually interact with these model classes directly to <em>create</em> the tables. Instead, you define them like we saw above. Then, other parts of the system use these definitions:</p>
+<ol class="arabic">
+<li><p><strong>Table Creation:</strong> Tools like the <a class="reference internal" href="03_database_manager.html"><span class="std std-doc">Database Manager</span></a> or <a class="reference internal" href="07_database_migrations__alembic_.html"><span class="std std-doc">Database Migrations (Alembic)</span></a> read these model definitions. They instruct SQLAlchemy to connect to the database and generate the necessary SQL commands (like <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span> <span class="pre">funds</span> <span class="pre">(...)</span></code>, <code class="docutils literal notranslate"><span class="pre">CREATE</span> <span class="pre">TABLE</span> <span class="pre">filings</span> <span class="pre">(...)</span></code>, etc.) to build the actual tables based on our blueprints.</p></li>
+<li><p><strong>Data Handling:</strong> When we load data (using <a class="reference internal" href="04_data_loading___management_scripts.html"><span class="std std-doc">Data Loading &amp; Management Scripts</span></a>), we create <em>instances</em> (objects) of these model classes in Python. For example, to add the ‘MDIZX’ fund:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This is Python code, NOT SQL!</span>
+<span class="n">new_fund</span> <span class="o">=</span> <span class="n">Fund</span><span class="p">(</span><span class="n">ticker</span><span class="o">=</span><span class="s1">&#39;MDIZX&#39;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Meridian Small Cap Growth Fund&#39;</span><span class="p">)</span>
+<span class="c1"># Code using the Database Manager would then save this object:</span>
+<span class="c1"># db_manager.add_with_commit(session, new_fund)</span>
+</pre></div>
+</div>
+<p>SQLAlchemy, guided by the <a class="reference internal" href="03_database_manager.html"><span class="std std-doc">Database Manager</span></a>, translates creating this <code class="docutils literal notranslate"><span class="pre">new_fund</span></code> object and saving it into an <code class="docutils literal notranslate"><span class="pre">INSERT</span> <span class="pre">INTO</span> <span class="pre">funds</span> <span class="pre">(ticker,</span> <span class="pre">name)</span> <span class="pre">VALUES</span> <span class="pre">('MDIZX',</span> <span class="pre">'Meridian</span> <span class="pre">Small</span> <span class="pre">Cap</span> <span class="pre">Growth</span> <span class="pre">Fund')</span></code> SQL command, which is sent to the database.</p>
+</li>
+</ol>
+</section>
+<section id="under-the-hood-sqlalchemy-s-magic">
+<h2>Under the Hood: SQLAlchemy’s Magic<a class="headerlink" href="#under-the-hood-sqlalchemy-s-magic" title="Link to this heading">#</a></h2>
+<p>Let’s visualize how creating a new <code class="docutils literal notranslate"><span class="pre">Fund</span></code> record works using these models:</p>
+<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>sequenceDiagram
+    participant UserScript as Data Loading Script
+    participant Models as Fund Class (Blueprint)
+    participant DBSession as SQLAlchemy Session
+    participant SQLAlchemyORM as SQLAlchemy ORM Engine
+    participant Database
+
+    UserScript-&gt;&gt;Models: Create Fund object: `fund = Fund(ticker=&#39;MDIZX&#39;, ...)`
+    UserScript-&gt;&gt;DBSession: Add object to session: `session.add(fund)`
+    Note over DBSession: Object is now &#39;pending&#39;
+    UserScript-&gt;&gt;DBSession: Commit transaction: `session.commit()`
+    DBSession-&gt;&gt;SQLAlchemyORM: Process &#39;pending&#39; Fund object
+    SQLAlchemyORM-&gt;&gt;SQLAlchemyORM: Generate SQL: `INSERT INTO funds ...`
+    SQLAlchemyORM-&gt;&gt;Database: Execute SQL INSERT command
+    Database--&gt;&gt;SQLAlchemyORM: Confirm insertion (e.g., return new ID)
+    SQLAlchemyORM--&gt;&gt;DBSession: Commit successful
+    Note over Models: Fund object might get updated (e.g., with the new ID)
+    DBSession--&gt;&gt;UserScript: Commit finished
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p>Your script creates a standard Python object using one of our model classes (e.g., <code class="docutils literal notranslate"><span class="pre">Fund</span></code>).</p></li>
+<li><p>You add this object to a SQLAlchemy <code class="docutils literal notranslate"><span class="pre">Session</span></code> (managed by our <a class="reference internal" href="03_database_manager.html"><span class="std std-doc">Database Manager</span></a>). The session tracks changes.</p></li>
+<li><p>When you <code class="docutils literal notranslate"><span class="pre">commit</span></code> the session, SQLAlchemy looks at the objects you added.</p></li>
+<li><p>It uses the model definition (the blueprint) to figure out which table (<code class="docutils literal notranslate"><span class="pre">funds</span></code>) and columns (<code class="docutils literal notranslate"><span class="pre">ticker</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>) correspond to the object’s data.</p></li>
+<li><p>It generates the appropriate SQL command (<code class="docutils literal notranslate"><span class="pre">INSERT</span> <span class="pre">INTO</span> <span class="pre">...</span></code>).</p></li>
+<li><p>It sends this command to the database to actually store the data.</p></li>
+</ol>
+<p>The beauty is that we mostly interact with Python objects, and SQLAlchemy handles the translation to and from the database language (SQL).</p>
+<p><strong>Key Code Reference (<code class="docutils literal notranslate"><span class="pre">src/models/database.py</span></code>):</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/models/database.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">declarative_base</span><span class="p">,</span> <span class="n">relationship</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">ForeignKey</span> <span class="c1"># etc.</span>
+
+<span class="c1"># The foundation for all models</span>
+<span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+
+<span class="c1"># Our model classes inherit from Base</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Fund</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;funds&#39;</span>
+    <span class="c1"># ... columns ...</span>
+    <span class="c1"># Relationship defined here links Fund -&gt; Filing</span>
+    <span class="n">filings</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Filing&quot;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;fund&quot;</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Filing</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;filings&#39;</span>
+    <span class="c1"># Foreign key links Filing -&gt; Fund (table-level link)</span>
+    <span class="n">fund_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;funds.id&#39;</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># ... other columns ...</span>
+    <span class="c1"># Relationship defined here links Filing -&gt; Fund (object-level link)</span>
+    <span class="n">fund</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Fund&quot;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;filings&quot;</span><span class="p">)</span>
+    <span class="c1"># Relationship defined here links Filing -&gt; Holding</span>
+    <span class="n">holdings</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Holding&quot;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;filing&quot;</span><span class="p">)</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Holding</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s1">&#39;holdings&#39;</span>
+    <span class="c1"># Foreign key links Holding -&gt; Filing</span>
+    <span class="n">filing_id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">ForeignKey</span><span class="p">(</span><span class="s1">&#39;filings.id&#39;</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="c1"># ... other columns ...</span>
+    <span class="c1"># Relationship links Holding -&gt; Filing</span>
+    <span class="n">filing</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="s2">&quot;Filing&quot;</span><span class="p">,</span> <span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;holdings&quot;</span><span class="p">)</span>
+
+<span class="c1"># ... FundRelationship model ...</span>
+</pre></div>
+</div>
+<p>This file is the central place where the structure of our database is defined in Python code. The <code class="docutils literal notranslate"><span class="pre">Base</span></code>, <code class="docutils literal notranslate"><span class="pre">Column</span></code>, <code class="docutils literal notranslate"><span class="pre">ForeignKey</span></code>, and <code class="docutils literal notranslate"><span class="pre">relationship</span></code> components are the core SQLAlchemy tools we use to build these blueprints.</p>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h2>
+<p>You’ve now learned about Database Models and how we use SQLAlchemy to define them. These models are crucial blueprints that dictate how our collected financial data is structured and stored in the database.</p>
+<ul class="simple">
+<li><p>Models (<code class="docutils literal notranslate"><span class="pre">Fund</span></code>, <code class="docutils literal notranslate"><span class="pre">Filing</span></code>, <code class="docutils literal notranslate"><span class="pre">Holding</span></code>, <code class="docutils literal notranslate"><span class="pre">FundRelationship</span></code>) are Python classes defining table structures.</p></li>
+<li><p>SQLAlchemy translates these Python definitions into database tables and helps us interact with data using Python objects.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Columns</span></code>, <code class="docutils literal notranslate"><span class="pre">Data</span> <span class="pre">Types</span></code>, <code class="docutils literal notranslate"><span class="pre">ForeignKeys</span></code>, and <code class="docutils literal notranslate"><span class="pre">Relationships</span></code> are key components for defining structure and connections.</p></li>
+</ul>
+<p>These blueprints ensure our data is organized, consistent, and easily accessible for analysis. But how do we actually connect to the database and use these models to add or retrieve data? That’s the job of the Database Manager.</p>
+<p><strong>Next Up:</strong> Let’s meet the component responsible for managing the database connection and executing operations in <a class="reference internal" href="03_database_manager.html"><span class="std std-doc">Chapter 3: Database Manager</span></a>.</p>
+<hr class="docutils" />
+<p>Generated by <a class="reference external" href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="01_data_collector__edgarcollector_.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 1: Data Collector (EdgarCollector)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="03_database_manager.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 3: Database Manager</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-from-raw-data-to-organized-knowledge">The Problem: From Raw Data to Organized Knowledge</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#meet-the-blueprints-our-database-models">Meet the Blueprints: Our Database Models</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-our-blueprints-with-sqlalchemy">Defining Our Blueprints with SQLAlchemy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-it-works-from-python-class-to-database-table">How It Works: From Python Class to Database Table</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood-sqlalchemy-s-magic">Under the Hood: SQLAlchemy’s Magic</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Austin-Z
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

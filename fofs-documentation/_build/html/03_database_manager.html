@@ -1,0 +1,805 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 3: Database Manager &#8212; Fund of Funds Analysis</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '03_database_manager';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 4: Data Loading &amp; Management Scripts" href="04_data_loading___management_scripts.html" />
+    <link rel="prev" title="Chapter 2: Database Models (SQLAlchemy)" href="02_database_models__sqlalchemy_.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Fund of Funds Analysis - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Fund of Funds Analysis - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Tutorial: FOFs-Capstone
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_data_collector__edgarcollector_.html">Chapter 1: Data Collector (EdgarCollector)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_database_models__sqlalchemy_.html">Chapter 2: Database Models (SQLAlchemy)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 3: Database Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_data_loading___management_scripts.html">Chapter 4: Data Loading &amp; Management Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_fund_service.html">Chapter 5: Fund Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_ai_service__geminiservice_.html">Chapter 6: AI Service (GeminiService)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_database_migrations__alembic_.html">Chapter 7: Database Migrations (Alembic)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="08_application_configuration__settings_.html">Chapter 8: Application Configuration (Settings)</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/Austin-Z/FOFs-Capstone" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/Austin-Z/FOFs-Capstone/issues/new?title=Issue%20on%20page%20%2F03_database_manager.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/03_database_manager.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 3: Database Manager</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-connecting-and-talking-to-the-database">The Problem: Connecting and Talking to the Database</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#meet-the-database-manager-your-project-s-librarian">Meet the Database Manager: Your Project’s Librarian</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts-explained">Key Concepts Explained</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-use-the-database-manager">How to Use the Database Manager</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood-how-does-it-work">Under the Hood: How Does it Work?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diving-deeper-into-the-code-src-database-manager-py">Diving Deeper into the Code (<code class="docutils literal notranslate"><span class="pre">src/database/manager.py</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-3-database-manager">
+<h1>Chapter 3: Database Manager<a class="headerlink" href="#chapter-3-database-manager" title="Link to this heading">#</a></h1>
+<p>Welcome back! In <a class="reference internal" href="02_database_models__sqlalchemy_.html"><span class="std std-doc">Chapter 2: Database Models (SQLAlchemy)</span></a>, we designed the blueprints (<code class="docutils literal notranslate"><span class="pre">Fund</span></code>, <code class="docutils literal notranslate"><span class="pre">Filing</span></code>, <code class="docutils literal notranslate"><span class="pre">Holding</span></code> classes) for how our financial data should be structured in the database. We have the plans, but how do we actually connect to the database “building” and start using those plans to store or retrieve information?</p>
+<section id="the-problem-connecting-and-talking-to-the-database">
+<h2>The Problem: Connecting and Talking to the Database<a class="headerlink" href="#the-problem-connecting-and-talking-to-the-database" title="Link to this heading">#</a></h2>
+<p>Imagine you have the architectural blueprints for a library (our Database Models). You also have boxes of books arriving (raw data from the <a class="reference internal" href="01_data_collector__edgarcollector_.html"><span class="std std-doc">Data Collector (EdgarCollector)</span></a>). Now, you need someone who knows:</p>
+<ol class="arabic simple">
+<li><p>How to unlock the library doors (connect to the database).</p></li>
+<li><p>How to issue library cards (provide sessions) so people can check books in or out (add or read data).</p></li>
+<li><p>How to manage the flow of people entering and leaving efficiently (manage connections).</p></li>
+</ol>
+<p>Simply having the blueprints isn’t enough. We need a dedicated manager for the database interactions.</p>
+</section>
+<section id="meet-the-database-manager-your-project-s-librarian">
+<h2>Meet the Database Manager: Your Project’s Librarian<a class="headerlink" href="#meet-the-database-manager-your-project-s-librarian" title="Link to this heading">#</a></h2>
+<p>Think of the <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code> as your project’s head librarian. It doesn’t store the data itself (that’s the database’s job) and it doesn’t define the data structure (that’s the <a class="reference internal" href="02_database_models__sqlalchemy_.html"><span class="std std-doc">Database Models (SQLAlchemy)</span></a>’s job). Its main responsibilities are:</p>
+<ol class="arabic simple">
+<li><p><strong>Connecting:</strong> It knows the secret handshake (database address, username, password) to connect to the database system (like MySQL).</p></li>
+<li><p><strong>Providing Access:</strong> It hands out temporary “library cards” called <strong>sessions</strong>. Other parts of the project use these sessions to perform actions like adding new fund information or querying existing holdings.</p></li>
+<li><p><strong>Managing Connections:</strong> It efficiently manages the actual network connections to the database, often reusing them (using a connection pool) to save time and resources.</p></li>
+<li><p><strong>Hiding Complexity:</strong> It uses the powerful SQLAlchemy library under the hood but provides a simpler interface, so other parts of the project don’t need to worry about the nitty-gritty details of database connection logic.</p></li>
+</ol>
+<p>Essentially, the <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code> is the central gateway for all database interactions in our project.</p>
+</section>
+<section id="key-concepts-explained">
+<h2>Key Concepts Explained<a class="headerlink" href="#key-concepts-explained" title="Link to this heading">#</a></h2>
+<p>Let’s break down some terms related to the Database Manager:</p>
+<ul class="simple">
+<li><p><strong>Database Engine:</strong> The actual database software running on a server, like MySQL or PostgreSQL. This is the “library building” itself.</p></li>
+<li><p><strong>Connection String/URL:</strong> A special string containing all the information needed to connect to the database: the type of database, username, password, server address (host), port number, and the specific database name. It’s like the library’s full address and the key to the front door. Example: <code class="docutils literal notranslate"><span class="pre">mysql+mysqlconnector://user:password&#64;hostname:port/database_name</span></code></p></li>
+<li><p><strong>SQLAlchemy Engine:</strong> A core object created by SQLAlchemy using the Connection String. It represents the connection pathway to a <em>specific</em> database and manages a <strong>connection pool</strong>. Think of it as the library’s main entrance and security system.</p></li>
+<li><p><strong>Connection Pool:</strong> Instead of opening a brand new connection to the database every single time we need one (which is slow), the SQLAlchemy Engine maintains a “pool” of ready-to-use connections. When we need one, the Engine lends one out from the pool; when we’re done, it goes back into the pool. This is like having a set of pre-validated entry passes at the library entrance for efficiency.</p></li>
+<li><p><strong>Session (SQLAlchemy Session):</strong> The primary tool for interacting with the database <em>through</em> the Engine. You get a Session from the <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code>. Think of it as your temporary library card. You use the Session to:</p>
+<ul>
+<li><p>Add new objects (like a new <code class="docutils literal notranslate"><span class="pre">Fund</span></code>) to be saved.</p></li>
+<li><p>Query the database for existing objects.</p></li>
+<li><p>Mark objects for deletion.
+The Session keeps track of all your intended changes within a single “conversation” or transaction. When you’re ready, you tell the session to <code class="docutils literal notranslate"><span class="pre">commit</span></code> (save) these changes permanently to the database. If something goes wrong, you can <code class="docutils literal notranslate"><span class="pre">rollback</span></code> (cancel) the changes.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="how-to-use-the-database-manager">
+<h2>How to Use the Database Manager<a class="headerlink" href="#how-to-use-the-database-manager" title="Link to this heading">#</a></h2>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code> is quite straightforward. You mostly interact with it in two ways: creating an instance and getting a session.</p>
+<p><strong>1. Create a Database Manager Instance:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: (Example usage, e.g., in a script or service)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.database.manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">DatabaseManager</span>
+
+<span class="c1"># Create an instance of the manager</span>
+<span class="c1"># This automatically reads connection settings and sets up the engine.</span>
+<span class="n">db_manager</span> <span class="o">=</span> <span class="n">DatabaseManager</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Database Manager initialized.&quot;</span><span class="p">)</span>
+<span class="c1"># Expected Outcome: The manager connects to the database using settings</span>
+<span class="c1"># found in the environment or configuration files. If successful, it prints</span>
+<span class="c1"># the message. If it fails (e.g., wrong password), it might raise an error.</span>
+</pre></div>
+</div>
+<p>When you create <code class="docutils literal notranslate"><span class="pre">DatabaseManager()</span></code>, it automatically looks for the database connection details (using <a class="reference internal" href="08_application_configuration__settings_.html"><span class="std std-doc">Application Configuration (Settings)</span></a>) and sets up the SQLAlchemy Engine and Session factory behind the scenes.</p>
+<p><strong>2. Get a Database Session:</strong></p>
+<p>This is the most common way you’ll use the manager.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># (Continuing from above...)</span>
+
+<span class="c1"># Ask the manager for a new session (like getting a library card)</span>
+<span class="n">db_session</span> <span class="o">=</span> <span class="n">db_manager</span><span class="o">.</span><span class="n">get_session</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Obtained a database session.&quot;</span><span class="p">)</span>
+
+<span class="c1"># Now you can use &#39;db_session&#39; to talk to the database...</span>
+<span class="c1"># (Example: Add a new fund - requires Fund model from Chapter 2)</span>
+<span class="c1"># from src.models.database import Fund</span>
+<span class="c1"># new_fund = Fund(ticker=&quot;TESTFUND&quot;, name=&quot;My Test Fund&quot;, fund_type=&quot;fund_of_funds&quot;)</span>
+<span class="c1"># db_session.add(new_fund) # Tell the session we want to add this</span>
+<span class="c1"># db_session.commit()     # Save the changes to the database!</span>
+
+<span class="c1"># IMPORTANT: Always close the session when you&#39;re done!</span>
+<span class="n">db_session</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Session closed.&quot;</span><span class="p">)</span>
+
+<span class="c1"># Expected Outcome: A Session object is created and returned.</span>
+<span class="c1"># You can then use this session object with SQLAlchemy methods</span>
+<span class="c1"># (like add, query, commit, rollback) to interact with the database.</span>
+<span class="c1"># Finally, the session is closed, releasing the connection back to the pool.</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">get_session()</span></code> method provides you with that temporary “library card” (the <code class="docutils literal notranslate"><span class="pre">Session</span></code> object) needed to perform database operations. Remember to <code class="docutils literal notranslate"><span class="pre">close()</span></code> the session when you’re finished to return the underlying connection to the pool.</p>
+<p><strong>3. Helper Method: <code class="docutils literal notranslate"><span class="pre">add_with_commit</span></code></strong></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code> also provides a convenient helper method for a common pattern: adding a single object and immediately saving (committing) it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># (Continuing from above...)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.models.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Fund</span> <span class="c1"># Assuming Fund model is defined</span>
+
+<span class="c1"># Get a fresh session</span>
+<span class="n">session_for_add</span> <span class="o">=</span> <span class="n">db_manager</span><span class="o">.</span><span class="n">get_session</span><span class="p">()</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Create a new Fund object (using blueprint from Chapter 2)</span>
+    <span class="n">another_fund</span> <span class="o">=</span> <span class="n">Fund</span><span class="p">(</span><span class="n">ticker</span><span class="o">=</span><span class="s2">&quot;XYZFUND&quot;</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Another Test Fund&quot;</span><span class="p">,</span> <span class="n">fund_type</span><span class="o">=</span><span class="s2">&quot;underlying_fund&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Use the helper method to add and commit in one step</span>
+    <span class="n">saved_fund</span> <span class="o">=</span> <span class="n">db_manager</span><span class="o">.</span><span class="n">add_with_commit</span><span class="p">(</span><span class="n">session_for_add</span><span class="p">,</span> <span class="n">another_fund</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">saved_fund</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully added and saved fund: </span><span class="si">{</span><span class="n">saved_fund</span><span class="o">.</span><span class="n">ticker</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Failed to add fund.&quot;</span><span class="p">)</span>
+
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="c1"># Always close the session</span>
+    <span class="n">session_for_add</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="c1"># Expected Outcome: The &#39;XYZFUND&#39; object is added to the session,</span>
+<span class="c1"># the session commits the change to the database, and the method</span>
+<span class="c1"># returns the saved object (possibly updated with a database ID).</span>
+<span class="c1"># If an error occurs during the database operation, it catches it,</span>
+<span class="c1"># rolls back the change, logs the error, and returns None.</span>
+</pre></div>
+</div>
+<p>This helper simplifies the common add-and-save operation and includes basic error handling (logging and rollback).</p>
+</section>
+<section id="under-the-hood-how-does-it-work">
+<h2>Under the Hood: How Does it Work?<a class="headerlink" href="#under-the-hood-how-does-it-work" title="Link to this heading">#</a></h2>
+<p>Let’s trace the steps when you create and use the <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code>:</p>
+<ol class="arabic simple">
+<li><p><strong>Initialization (<code class="docutils literal notranslate"><span class="pre">__init__</span></code>)</strong>:</p>
+<ul class="simple">
+<li><p>You create <code class="docutils literal notranslate"><span class="pre">DatabaseManager()</span></code>.</p></li>
+<li><p>It reads the database connection URL (e.g., <code class="docutils literal notranslate"><span class="pre">mysql+mysqlconnector://user:pass&#64;host:port/db_name</span></code>) from the project’s <a class="reference internal" href="08_application_configuration__settings_.html"><span class="std std-doc">Application Configuration (Settings)</span></a>.</p></li>
+<li><p>It uses SQLAlchemy’s <code class="docutils literal notranslate"><span class="pre">create_engine(DATABASE_URL)</span></code> function. This function parses the URL, understands it’s for MySQL, and sets up the core <strong>Engine</strong> object, which manages the low-level database connections (the <strong>connection pool</strong>).</p></li>
+<li><p>It then creates a <strong>Session factory</strong> (<code class="docutils literal notranslate"><span class="pre">sessionmaker(bind=self.engine)</span></code>). This factory knows how to create new <code class="docutils literal notranslate"><span class="pre">Session</span></code> objects that are linked to our specific Engine.</p></li>
+</ul>
+</li>
+<li><p><strong>Getting a Session (<code class="docutils literal notranslate"><span class="pre">get_session</span></code>)</strong>:</p>
+<ul class="simple">
+<li><p>You call <code class="docutils literal notranslate"><span class="pre">db_manager.get_session()</span></code>.</p></li>
+<li><p>The manager uses the Session factory created during initialization.</p></li>
+<li><p>The factory produces a new <code class="docutils literal notranslate"><span class="pre">Session</span></code> object. This Session borrows a connection from the Engine’s connection pool.</p></li>
+<li><p>This <code class="docutils literal notranslate"><span class="pre">Session</span></code> object is returned to your code.</p></li>
+</ul>
+</li>
+<li><p><strong>Using the Session</strong>:</p>
+<ul class="simple">
+<li><p>Your code (e.g., a <a class="reference internal" href="04_data_loading___management_scripts.html"><span class="std std-doc">Data Loading &amp; Management Scripts</span></a> or the <a class="reference internal" href="05_fund_service.html"><span class="std std-doc">Fund Service</span></a>) uses this Session object to add, query, update, or delete data using the <a class="reference internal" href="02_database_models__sqlalchemy_.html"><span class="std std-doc">Database Models (SQLAlchemy)</span></a>.</p></li>
+<li><p>When you call <code class="docutils literal notranslate"><span class="pre">session.commit()</span></code>, the Session gathers all the tracked changes and sends the corresponding SQL commands (like <code class="docutils literal notranslate"><span class="pre">INSERT</span></code>, <code class="docutils literal notranslate"><span class="pre">UPDATE</span></code>, <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>) to the database over the borrowed connection.</p></li>
+<li><p>When you call <code class="docutils literal notranslate"><span class="pre">session.close()</span></code>, the Session releases the database connection back to the Engine’s pool, making it available for reuse.</p></li>
+</ul>
+</li>
+</ol>
+<p>Here’s a diagram showing the initialization and session retrieval:</p>
+<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>sequenceDiagram
+    participant YourScript as Your Script
+    participant DBMgr as DatabaseManager
+    participant Settings
+    participant SQLAlchemyEngine as Engine (Pool)
+    participant SQLAlchemySessionMaker as Session Factory
+    participant DBSession as Session
+
+    YourScript-&gt;&gt;DBMgr: Create instance: `DatabaseManager()`
+    DBMgr-&gt;&gt;Settings: Read DB URL (e.g., from .env)
+    Settings--&gt;&gt;DBMgr: Return DB URL
+    DBMgr-&gt;&gt;SQLAlchemyEngine: `create_engine(DB_URL)`
+    Note over SQLAlchemyEngine: Engine setup, connection pool ready
+    SQLAlchemyEngine--&gt;&gt;DBMgr: Engine instance created
+    DBMgr-&gt;&gt;SQLAlchemySessionMaker: `sessionmaker(bind=Engine)`
+    SQLAlchemySessionMaker--&gt;&gt;DBMgr: Session Factory created
+    DBMgr--&gt;&gt;YourScript: `DatabaseManager` instance ready
+
+    YourScript-&gt;&gt;DBMgr: `get_session()`
+    DBMgr-&gt;&gt;SQLAlchemySessionMaker: Call factory `()`
+    SQLAlchemySessionMaker-&gt;&gt;SQLAlchemyEngine: Request connection from pool
+    SQLAlchemyEngine--&gt;&gt;SQLAlchemySessionMaker: Provide connection
+    SQLAlchemySessionMaker--&gt;&gt;DBSession: Create new `Session` object
+    DBSession--&gt;&gt;DBMgr: Return new `Session`
+    DBMgr--&gt;&gt;YourScript: Return `Session` instance
+</pre></div>
+</div>
+</section>
+<section id="diving-deeper-into-the-code-src-database-manager-py">
+<h2>Diving Deeper into the Code (<code class="docutils literal notranslate"><span class="pre">src/database/manager.py</span></code>)<a class="headerlink" href="#diving-deeper-into-the-code-src-database-manager-py" title="Link to this heading">#</a></h2>
+<p>Let’s look at the key parts of the <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code> implementation.</p>
+<p><strong>1. Initialization and Connection Setup:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/database/manager.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_engine</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.orm</span><span class="w"> </span><span class="kn">import</span> <span class="n">sessionmaker</span><span class="p">,</span> <span class="n">Session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.models.database</span><span class="w"> </span><span class="kn">import</span> <span class="n">Base</span> <span class="c1"># Needed for create_tables</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span> <span class="c1"># To get DB settings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseManager</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ... setup logger ...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">()</span> <span class="c1"># Load settings (reads .env)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_connection</span><span class="p">()</span> <span class="c1"># Call helper to connect</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize database connection from settings.&quot;&quot;&quot;</span>
+        <span class="c1"># Get the database URL from settings</span>
+        <span class="c1"># (Settings class logic handles finding DATABASE_URL env var or building it)</span>
+        <span class="n">database_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">database_url</span>
+
+        <span class="c1"># Create the SQLAlchemy engine using the URL</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span>
+            <span class="n">database_url</span><span class="p">,</span>
+            <span class="n">pool_recycle</span><span class="o">=</span><span class="mi">3600</span><span class="p">,</span> <span class="c1"># Optional: Recycle connections periodically</span>
+            <span class="n">pool_pre_ping</span><span class="o">=</span><span class="kc">True</span> <span class="c1"># Optional: Check connection validity</span>
+            <span class="c1"># ... other args ...</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Create the session factory bound to our engine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Session</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method creates a <code class="docutils literal notranslate"><span class="pre">Settings</span></code> object to load configuration.</p></li>
+<li><p>It calls <code class="docutils literal notranslate"><span class="pre">_initialize_connection</span></code>, which retrieves the crucial <code class="docutils literal notranslate"><span class="pre">database_url</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">create_engine(database_url,</span> <span class="pre">...)</span></code> sets up the core engine and connection pool based on the URL provided.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sessionmaker(bind=self.engine)</span></code> creates the factory (<code class="docutils literal notranslate"><span class="pre">self.Session</span></code>) that will produce individual session objects, all tied to the engine we just created.</p></li>
+</ul>
+<p><strong>2. Getting a Session:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/database/manager.py</span>
+<span class="c1"># (Inside the DatabaseManager class)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_session</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Session</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a new database session.&quot;&quot;&quot;</span>
+        <span class="c1"># Simply call the factory to create and return a new session</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This method is very simple! It just calls the session factory (<code class="docutils literal notranslate"><span class="pre">self.Session()</span></code>) that was configured during initialization. The factory takes care of getting a connection from the pool and creating the <code class="docutils literal notranslate"><span class="pre">Session</span></code> object.</p></li>
+</ul>
+<p><strong>3. Helper: Add and Commit:</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/database/manager.py</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sqlalchemy.exc</span><span class="w"> </span><span class="kn">import</span> <span class="n">SQLAlchemyError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="c1"># (Inside the DatabaseManager class)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_with_commit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">Session</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Base</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Base</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add an object to the database and commit.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>  <span class="c1"># Stage the object for addition</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>  <span class="c1"># Try to save changes to DB</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="c1"># Update the object with DB data (like ID)</span>
+            <span class="k">return</span> <span class="n">obj</span>
+        <span class="k">except</span> <span class="n">SQLAlchemyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># Log the error if saving fails</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error adding to database: </span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span> <span class="c1"># Cancel the changes</span>
+            <span class="k">return</span> <span class="kc">None</span> <span class="c1"># Indicate failure</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This method encapsulates the common <code class="docutils literal notranslate"><span class="pre">add</span> <span class="pre">-&gt;</span> <span class="pre">commit</span> <span class="pre">-&gt;</span> <span class="pre">refresh</span></code> pattern.</p></li>
+<li><p>It includes <code class="docutils literal notranslate"><span class="pre">try...except</span></code> block to catch potential database errors during the <code class="docutils literal notranslate"><span class="pre">commit</span></code>.</p></li>
+<li><p>If an error occurs, it rolls back the transaction (<code class="docutils literal notranslate"><span class="pre">session.rollback()</span></code>) so the database isn’t left in a partially changed state, logs the error, and returns <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h2>
+<p>You’ve now met the <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code>, our project’s librarian! You learned:</p>
+<ul class="simple">
+<li><p>Why we need it: To handle database connections and provide a consistent way to interact with the database.</p></li>
+<li><p>What it does: Connects using settings, creates a SQLAlchemy Engine and Session factory, and provides <code class="docutils literal notranslate"><span class="pre">Session</span></code> objects (library cards) on demand.</p></li>
+<li><p>Key concepts: Engine, Connection Pool, Session.</p></li>
+<li><p>How to use it: Create an instance, call <code class="docutils literal notranslate"><span class="pre">get_session()</span></code> to get a session for database operations, and remember to <code class="docutils literal notranslate"><span class="pre">close()</span></code> the session.</p></li>
+<li><p>How it simplifies things: It hides the complexity of connection management and provides helpful methods like <code class="docutils literal notranslate"><span class="pre">add_with_commit</span></code>.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code> acts as the essential bridge between our application’s logic and the database itself. Now that we know how to define data structures (<a class="reference internal" href="02_database_models__sqlalchemy_.html"><span class="std std-doc">Database Models (SQLAlchemy)</span></a>) and how to connect and get a session (<code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code>), how do we actually put these together to load the data gathered by our <a class="reference internal" href="01_data_collector__edgarcollector_.html"><span class="std std-doc">Data Collector (EdgarCollector)</span></a>?</p>
+<p><strong>Next Up:</strong> Let’s explore the scripts responsible for using the Collector, Manager, and Models to populate our database in <a class="reference internal" href="04_data_loading___management_scripts.html"><span class="std std-doc">Chapter 4: Data Loading &amp; Management Scripts</span></a>.</p>
+<hr class="docutils" />
+<p>Generated by <a class="reference external" href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="02_database_models__sqlalchemy_.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 2: Database Models (SQLAlchemy)</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="04_data_loading___management_scripts.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 4: Data Loading &amp; Management Scripts</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-connecting-and-talking-to-the-database">The Problem: Connecting and Talking to the Database</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#meet-the-database-manager-your-project-s-librarian">Meet the Database Manager: Your Project’s Librarian</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts-explained">Key Concepts Explained</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-to-use-the-database-manager">How to Use the Database Manager</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood-how-does-it-work">Under the Hood: How Does it Work?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diving-deeper-into-the-code-src-database-manager-py">Diving Deeper into the Code (<code class="docutils literal notranslate"><span class="pre">src/database/manager.py</span></code>)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Austin-Z
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

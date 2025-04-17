@@ -1,0 +1,763 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 8: Application Configuration (Settings) &#8212; Fund of Funds Analysis</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '08_application_configuration__settings_';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Chapter 7: Database Migrations (Alembic)" href="07_database_migrations__alembic_.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Fund of Funds Analysis - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Fund of Funds Analysis - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="index.html">
+                    Tutorial: FOFs-Capstone
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01_data_collector__edgarcollector_.html">Chapter 1: Data Collector (EdgarCollector)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="02_database_models__sqlalchemy_.html">Chapter 2: Database Models (SQLAlchemy)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03_database_manager.html">Chapter 3: Database Manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="04_data_loading___management_scripts.html">Chapter 4: Data Loading &amp; Management Scripts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="05_fund_service.html">Chapter 5: Fund Service</a></li>
+<li class="toctree-l1"><a class="reference internal" href="06_ai_service__geminiservice_.html">Chapter 6: AI Service (GeminiService)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="07_database_migrations__alembic_.html">Chapter 7: Database Migrations (Alembic)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 8: Application Configuration (Settings)</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/Austin-Z/FOFs-Capstone" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/Austin-Z/FOFs-Capstone/issues/new?title=Issue%20on%20page%20%2F08_application_configuration__settings_.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/08_application_configuration__settings_.md" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.md</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 8: Application Configuration (Settings)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-hardcoding-secrets-and-settings-is-bad">The Problem: Hardcoding Secrets and Settings is Bad!</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#meet-the-settings-control-panel-src-config-py">Meet the Settings Control Panel: <code class="docutils literal notranslate"><span class="pre">src/config.py</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts-explained">Key Concepts Explained</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-it-works-the-settings-class">How It Works: The <code class="docutils literal notranslate"><span class="pre">Settings</span></code> Class</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-other-components-use-settings">How Other Components Use Settings</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood-pydantic-s-loading-order">Under the Hood: Pydantic’s Loading Order</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-in-different-environments-local-vs-railway">Configuration in Different Environments (Local vs. Railway)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-8-application-configuration-settings">
+<h1>Chapter 8: Application Configuration (Settings)<a class="headerlink" href="#chapter-8-application-configuration-settings" title="Link to this heading">#</a></h1>
+<p>Welcome to the final chapter in our core component overview! In <a class="reference internal" href="07_database_migrations__alembic_.html"><span class="std std-doc">Chapter 7: Database Migrations (Alembic)</span></a>, we learned how Alembic helps us manage changes to our database structure over time. You might recall that Alembic needed to know the database address (the database URL) to connect. Where did it get that information? And how do other parts of our application, like the <a class="reference internal" href="01_data_collector__edgarcollector_.html"><span class="std std-doc">Data Collector (EdgarCollector)</span></a> or the <a class="reference internal" href="06_ai_service__geminiservice_.html"><span class="std std-doc">AI Service (GeminiService)</span></a>, get their secret API keys or database passwords without us writing them directly into the code?</p>
+<section id="the-problem-hardcoding-secrets-and-settings-is-bad">
+<h2>The Problem: Hardcoding Secrets and Settings is Bad!<a class="headerlink" href="#the-problem-hardcoding-secrets-and-settings-is-bad" title="Link to this heading">#</a></h2>
+<p>Imagine you’re writing the code for our <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code>. It needs a password to connect to the database. You could just type the password directly into the Python file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># BAD IDEA - DO NOT DO THIS!</span>
+<span class="n">database_password</span> <span class="o">=</span> <span class="s2">&quot;my_super_secret_password_123&quot;</span>
+<span class="c1"># ... code to connect using the password ...</span>
+</pre></div>
+</div>
+<p>This seems easy at first, but it creates huge problems:</p>
+<ol class="arabic simple">
+<li><p><strong>Security Risk:</strong> If you share your code (e.g., on GitHub), you’ve just shared your secret password with the world!</p></li>
+<li><p><strong>Inflexibility:</strong> What if you want to run the application on your laptop (using one database password) and also deploy it to a server like Railway (which might use a different database password)? You’d have to change the code every time.</p></li>
+<li><p><strong>Maintenance Nightmare:</strong> If you need to change the password or an API key, you have to hunt through all your code files to find where you typed it.</p></li>
+</ol>
+<p>We need a way to keep these sensitive details and environment-specific settings <em>separate</em> from our main application code.</p>
+</section>
+<section id="meet-the-settings-control-panel-src-config-py">
+<h2>Meet the Settings Control Panel: <code class="docutils literal notranslate"><span class="pre">src/config.py</span></code><a class="headerlink" href="#meet-the-settings-control-panel-src-config-py" title="Link to this heading">#</a></h2>
+<p>Think of our application’s configuration system, primarily defined in <code class="docutils literal notranslate"><span class="pre">src/config.py</span></code>, as its <strong>central control panel or settings menu</strong>. It uses a clever tool called <strong>Pydantic</strong> (specifically, its <code class="docutils literal notranslate"><span class="pre">BaseSettings</span></code> feature) to manage all the important parameters our application needs.</p>
+<p>This system’s job is to:</p>
+<ol class="arabic simple">
+<li><p><strong>Centralize Settings:</strong> Define all configuration variables (database details, API keys, environment type) in one place.</p></li>
+<li><p><strong>Load from Environment:</strong> Automatically read these settings from <strong>environment variables</strong> (system-level settings) or a special file called <code class="docutils literal notranslate"><span class="pre">.env</span></code>.</p></li>
+<li><p><strong>Separate Secrets:</strong> Keep sensitive information like passwords and API keys out of the version-controlled code (like Git).</p></li>
+<li><p><strong>Provide Easy Access:</strong> Make it simple for other parts of the code (like the <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code> or <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code>) to access the settings they need.</p></li>
+<li><p><strong>Validate:</strong> Check that the settings have the correct data type (e.g., a port number is actually an integer).</p></li>
+</ol>
+</section>
+<section id="key-concepts-explained">
+<h2>Key Concepts Explained<a class="headerlink" href="#key-concepts-explained" title="Link to this heading">#</a></h2>
+<ul>
+<li><p><strong>.env File:</strong> This is a simple text file you create in the root directory of your project (named exactly <code class="docutils literal notranslate"><span class="pre">.env</span></code>). You list your secret keys and local settings here, one per line, like <code class="docutils literal notranslate"><span class="pre">VARIABLE_NAME=value</span></code>.</p>
+<ul>
+<li><p><strong>Example <code class="docutils literal notranslate"><span class="pre">.env</span></code> file:</strong></p>
+<div class="highlight-dotenv notranslate"><div class="highlight"><pre><span></span># Database settings for local development
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=fof_analysis
+DB_USER=root
+DB_PASSWORD=your_local_db_password
+
+# API Keys (Get these from the respective services)
+SEC_USER_AGENT=&quot;Your Name Your Company contact@email.com&quot;
+OPENFIGI_API_KEY=your_openfigi_key_here
+GEMINI_API_KEY=your_gemini_key_here
+
+# Environment Setting
+ENV=development
+DEBUG=True
+</pre></div>
+</div>
+</li>
+<li><p><strong>Crucially:</strong> You should <strong>NEVER</strong> commit your <code class="docutils literal notranslate"><span class="pre">.env</span></code> file to Git. Add <code class="docutils literal notranslate"><span class="pre">.env</span></code> to your <code class="docutils literal notranslate"><span class="pre">.gitignore</span></code> file to prevent accidentally sharing your secrets!</p></li>
+</ul>
+</li>
+<li><p><strong>Environment Variables:</strong> These are settings that exist outside your application code, within the operating system or hosting environment (like Railway). When you deploy your application, you typically configure sensitive settings (like the production database password or API keys) as environment variables directly on the server.</p></li>
+<li><p><strong>Pydantic <code class="docutils literal notranslate"><span class="pre">BaseSettings</span></code>:</strong> This is the magic component from the Pydantic library. We create a Python class (our <code class="docutils literal notranslate"><span class="pre">Settings</span></code> class in <code class="docutils literal notranslate"><span class="pre">src/config.py</span></code>) that inherits from <code class="docutils literal notranslate"><span class="pre">BaseSettings</span></code>. When you create an instance of this class, Pydantic automatically does the following:</p>
+<ol class="arabic simple">
+<li><p>Looks for environment variables matching the attribute names in your <code class="docutils literal notranslate"><span class="pre">Settings</span></code> class (case-insensitive).</p></li>
+<li><p>If not found as environment variables, it looks for them in the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file (if <code class="docutils literal notranslate"><span class="pre">load_dotenv()</span></code> is called, which our <code class="docutils literal notranslate"><span class="pre">config.py</span></code> does).</p></li>
+<li><p>If still not found, it uses any default value defined in the class.</p></li>
+<li><p>It validates the data type (e.g., converts a string “3306” to an integer <code class="docutils literal notranslate"><span class="pre">3306</span></code> for <code class="docutils literal notranslate"><span class="pre">db_port</span></code>).</p></li>
+</ol>
+</li>
+</ul>
+</section>
+<section id="how-it-works-the-settings-class">
+<h2>How It Works: The <code class="docutils literal notranslate"><span class="pre">Settings</span></code> Class<a class="headerlink" href="#how-it-works-the-settings-class" title="Link to this heading">#</a></h2>
+<p>Let’s look at a simplified version of <code class="docutils literal notranslate"><span class="pre">src/config.py</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/config.py (Simplified)</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSettings</span> <span class="c1"># Use pydantic-settings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dotenv</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_dotenv</span>
+
+<span class="c1"># Load variables from .env file into environment variables first</span>
+<span class="n">load_dotenv</span><span class="p">()</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Settings</span><span class="p">(</span><span class="n">BaseSettings</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Application settings loaded automatically by Pydantic.&quot;&quot;&quot;</span>
+
+    <span class="c1"># Environment setting (defaults to &#39;development&#39;)</span>
+    <span class="n">env</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;ENV&quot;</span><span class="p">,</span> <span class="s2">&quot;development&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Database settings (Pydantic automatically looks for these env vars)</span>
+    <span class="n">db_host</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span> <span class="c1"># Default value if not found elsewhere</span>
+    <span class="n">db_port</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3306</span>
+    <span class="n">db_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;fof_analysis&quot;</span>
+    <span class="n">db_user</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;root&quot;</span>
+    <span class="n">db_password</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span> <span class="c1"># Default empty password</span>
+
+    <span class="c1"># API Keys (will be read from .env or environment variables)</span>
+    <span class="n">sec_user_agent</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">openfigi_api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Optional key</span>
+    <span class="n">gemini_api_key</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Optional key</span>
+
+    <span class="c1"># Automatically construct the database URL</span>
+    <span class="c1"># (Note: Real config.py has more complex logic here for Railway)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">database_url</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="c1"># Simple construction for example purposes</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;mysql+mysqlconnector://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_user</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_password</span><span class="si">}</span><span class="s2">@</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_host</span><span class="si">}</span><span class="s2">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_port</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">db_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
+        <span class="c1"># Tells Pydantic to look for a .env file</span>
+        <span class="n">env_file</span> <span class="o">=</span> <span class="s2">&quot;.env&quot;</span>
+        <span class="n">env_file_encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
+
+<span class="c1"># Create a single instance to be imported by other modules if needed</span>
+<span class="c1"># (Though often, modules create their own instance like: settings = Settings())</span>
+<span class="c1"># settings = Settings()</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">load_dotenv()</span></code>: This function (from the <code class="docutils literal notranslate"><span class="pre">python-dotenv</span></code> library) reads your <code class="docutils literal notranslate"><span class="pre">.env</span></code> file and makes the variables defined there available as environment variables <em>within the running script</em>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Settings(BaseSettings):</span></code>: We define our settings structure inheriting from <code class="docutils literal notranslate"><span class="pre">BaseSettings</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">db_host:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">&quot;localhost&quot;</span></code>: We declare an attribute <code class="docutils literal notranslate"><span class="pre">db_host</span></code> of type <code class="docutils literal notranslate"><span class="pre">str</span></code>. Pydantic will look for an environment variable named <code class="docutils literal notranslate"><span class="pre">DB_HOST</span></code> (case-insensitive). If it doesn’t find one (either in the actual environment or loaded from <code class="docutils literal notranslate"><span class="pre">.env</span></code>), it will use the default value <code class="docutils literal notranslate"><span class="pre">&quot;localhost&quot;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">db_port:</span> <span class="pre">int</span> <span class="pre">=</span> <span class="pre">3306</span></code>: Same idea, but Pydantic expects an integer (<code class="docutils literal notranslate"><span class="pre">int</span></code>). It will try to convert the value it finds into an integer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sec_user_agent:</span> <span class="pre">str</span></code>: Here, we didn’t provide a default. If Pydantic can’t find <code class="docutils literal notranslate"><span class="pre">SEC_USER_AGENT</span></code> in the environment or <code class="docutils literal notranslate"><span class="pre">.env</span></code>, it will raise an error when you try to create a <code class="docutils literal notranslate"><span class="pre">Settings</span></code> object, ensuring this required setting isn’t missing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">openfigi_api_key:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></code>: This means the API key is optional. If not found, it will default to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">database_url</span></code>: This is a calculated property. It uses the other loaded settings (<code class="docutils literal notranslate"><span class="pre">db_user</span></code>, <code class="docutils literal notranslate"><span class="pre">db_password</span></code>, etc.) to build the connection string needed by SQLAlchemy. (The actual <code class="docutils literal notranslate"><span class="pre">config.py</span></code> has more sophisticated logic to handle Railway’s environment variables directly).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">Config:</span></code>: The nested <code class="docutils literal notranslate"><span class="pre">Config</span></code> class tells Pydantic <code class="docutils literal notranslate"><span class="pre">BaseSettings</span></code> specific behaviors, like the name of the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file to look for.</p></li>
+</ul>
+</section>
+<section id="how-other-components-use-settings">
+<h2>How Other Components Use Settings<a class="headerlink" href="#how-other-components-use-settings" title="Link to this heading">#</a></h2>
+<p>Now, other parts of the application can easily access these settings without hardcoding anything.</p>
+<p><strong>Example 1: <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code> getting the DB URL</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/database/manager.py (Simplified Snippet)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span> <span class="c1"># Import the Settings class</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DatabaseManager</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ... setup logger ...</span>
+        <span class="c1"># Create an instance of Settings - Pydantic loads values automatically!</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize_connection</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_initialize_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Get the database URL from the settings object</span>
+        <span class="n">database_url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">database_url</span> <span class="c1"># Access the calculated property</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connecting to database defined in settings...&quot;</span><span class="p">)</span>
+        <span class="c1"># Create the SQLAlchemy engine using the URL</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="n">database_url</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+        <span class="c1"># ... rest of setup ...</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">DatabaseManager</span></code> simply imports <code class="docutils literal notranslate"><span class="pre">Settings</span></code>, creates an instance (<code class="docutils literal notranslate"><span class="pre">self.settings</span> <span class="pre">=</span> <span class="pre">Settings()</span></code>), and then accesses the needed configuration like <code class="docutils literal notranslate"><span class="pre">self.settings.database_url</span></code>. All the complexity of loading from <code class="docutils literal notranslate"><span class="pre">.env</span></code> or environment variables is handled by Pydantic inside the <code class="docutils literal notranslate"><span class="pre">Settings</span></code> class.</p></li>
+</ul>
+<p><strong>Example 2: <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code> getting the API Key</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># File: src/services/gemini_service.py (Simplified Snippet)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">src.config</span><span class="w"> </span><span class="kn">import</span> <span class="n">Settings</span> <span class="c1"># Import Settings</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GeminiService</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># ... setup logger ...</span>
+        <span class="c1"># Create settings instance</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">()</span>
+
+        <span class="c1"># Get the Gemini API key from settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">gemini_api_key</span> <span class="c1"># Access the loaded value</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">api_key</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;GEMINI_API_KEY not found in settings!&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Gemini API Key loaded from settings.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># ... rest of init ...</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Similarly, the <code class="docutils literal notranslate"><span class="pre">GeminiService</span></code> creates a <code class="docutils literal notranslate"><span class="pre">Settings</span></code> instance and directly accesses <code class="docutils literal notranslate"><span class="pre">settings.gemini_api_key</span></code>.</p></li>
+</ul>
+</section>
+<section id="under-the-hood-pydantic-s-loading-order">
+<h2>Under the Hood: Pydantic’s Loading Order<a class="headerlink" href="#under-the-hood-pydantic-s-loading-order" title="Link to this heading">#</a></h2>
+<p>When you create <code class="docutils literal notranslate"><span class="pre">settings</span> <span class="pre">=</span> <span class="pre">Settings()</span></code>, Pydantic looks for values in this order:</p>
+<ol class="arabic simple">
+<li><p><strong>Actual Environment Variables:</strong> Checks the system’s environment variables first (e.g., those set by Railway or your operating system).</p></li>
+<li><p><strong>.env File:</strong> If not found in the environment, it reads the <code class="docutils literal notranslate"><span class="pre">.env</span></code> file (because we specified <code class="docutils literal notranslate"><span class="pre">env_file</span> <span class="pre">=</span> <span class="pre">&quot;.env&quot;</span></code> and called <code class="docutils literal notranslate"><span class="pre">load_dotenv()</span></code>) and checks for variables there.</p></li>
+<li><p><strong>Default Values:</strong> If not found in either place, it uses the default value defined in the <code class="docutils literal notranslate"><span class="pre">Settings</span></code> class itself (e.g., <code class="docutils literal notranslate"><span class="pre">db_host</span> <span class="pre">=</span> <span class="pre">&quot;localhost&quot;</span></code>).</p></li>
+<li><p><strong>Error:</strong> If no value is found and no default was provided (like for <code class="docutils literal notranslate"><span class="pre">sec_user_agent</span></code> in our example), Pydantic raises an error.</p></li>
+</ol>
+<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>sequenceDiagram
+    participant Code as Your Code (e.g., DBMgr)
+    participant SettingsClass as Settings()
+    participant Pydantic as Pydantic BaseSettings Logic
+    participant EnvVars as Environment Variables
+    participant DotEnv as .env File
+
+    Code-&gt;&gt;SettingsClass: Create instance: `settings = Settings()`
+    SettingsClass-&gt;&gt;Pydantic: Initialize BaseSettings
+    Pydantic-&gt;&gt;EnvVars: Check for DB_HOST, DB_PASSWORD, GEMINI_API_KEY etc.
+    alt Value Found in EnvVars
+        EnvVars--&gt;&gt;Pydantic: Return value (e.g., production DB password)
+    else Value Not Found in EnvVars
+        Pydantic-&gt;&gt;DotEnv: Check for variable in .env file
+        alt Value Found in .env
+            DotEnv--&gt;&gt;Pydantic: Return value (e.g., local DB password)
+        else Value Not Found in .env
+            Pydantic-&gt;&gt;SettingsClass: Use Default Value (if any)
+            alt Default Exists
+                 SettingsClass--&gt;&gt;Pydantic: Return default (e.g., &quot;localhost&quot;)
+            else No Default
+                 Pydantic--&gt;&gt;SettingsClass: Raise MissingValueError!
+            end
+        end
+    end
+    Pydantic-&gt;&gt;Pydantic: Validate data types (e.g., port is int)
+    Pydantic--&gt;&gt;SettingsClass: Populate settings object attributes
+    SettingsClass--&gt;&gt;Code: Return initialized `settings` object
+</pre></div>
+</div>
+</section>
+<section id="configuration-in-different-environments-local-vs-railway">
+<h2>Configuration in Different Environments (Local vs. Railway)<a class="headerlink" href="#configuration-in-different-environments-local-vs-railway" title="Link to this heading">#</a></h2>
+<p>This system makes handling different environments easy:</p>
+<ul class="simple">
+<li><p><strong>Local Development:</strong> You use your <code class="docutils literal notranslate"><span class="pre">.env</span></code> file to store settings specific to your machine (like <code class="docutils literal notranslate"><span class="pre">DB_HOST=localhost</span></code>, your local password, test API keys).</p></li>
+<li><p><strong>Production (Railway):</strong> You do <em>not</em> upload your <code class="docutils literal notranslate"><span class="pre">.env</span></code> file. Instead, you configure the necessary environment variables directly in the Railway service settings dashboard (like <code class="docutils literal notranslate"><span class="pre">DATABASE_URL</span></code>, <code class="docutils literal notranslate"><span class="pre">GEMINI_API_KEY</span></code> with production values). Pydantic automatically picks these up because environment variables have higher priority than the (non-existent on the server) <code class="docutils literal notranslate"><span class="pre">.env</span></code> file.</p></li>
+</ul>
+</section>
+<section id="conclusion">
+<h2>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">#</a></h2>
+<p>You’ve now explored the Application Configuration system, the crucial “control panel” for our project! You learned:</p>
+<ul class="simple">
+<li><p><strong>Why it’s needed:</strong> To keep settings (especially secrets) separate from code, improving security and flexibility.</p></li>
+<li><p><strong>How it works:</strong> Using Pydantic’s <code class="docutils literal notranslate"><span class="pre">BaseSettings</span></code> in <code class="docutils literal notranslate"><span class="pre">src/config.py</span></code> to automatically load values from environment variables or a <code class="docutils literal notranslate"><span class="pre">.env</span></code> file.</p></li>
+<li><p><strong>Key Concepts:</strong> <code class="docutils literal notranslate"><span class="pre">.env</span></code> files (for local secrets, keep out of Git!), Environment Variables (for production), Pydantic <code class="docutils literal notranslate"><span class="pre">BaseSettings</span></code> (the loader/validator).</p></li>
+<li><p><strong>Benefits:</strong> Centralized, secure, type-safe, and environment-aware configuration.</p></li>
+</ul>
+<p>Managing configuration effectively is essential for building robust and deployable applications. This <code class="docutils literal notranslate"><span class="pre">Settings</span></code> approach provides a clean and standard way to handle this critical aspect.</p>
+<p><strong>Congratulations!</strong> You have now completed the overview of the core components of the FOFs-Capstone project. You’ve seen how data is collected, stored, managed, served, analyzed with AI, and how the application itself is configured and its database schema evolved. You now have a solid foundation to understand how these pieces fit together to achieve the project’s goals. Feel free to revisit any chapter as needed and explore the actual code in the <code class="docutils literal notranslate"><span class="pre">src/</span></code> directory to see these concepts in action!</p>
+<hr class="docutils" />
+<p>Generated by <a class="reference external" href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="07_database_migrations__alembic_.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 7: Database Migrations (Alembic)</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-problem-hardcoding-secrets-and-settings-is-bad">The Problem: Hardcoding Secrets and Settings is Bad!</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#meet-the-settings-control-panel-src-config-py">Meet the Settings Control Panel: <code class="docutils literal notranslate"><span class="pre">src/config.py</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-concepts-explained">Key Concepts Explained</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-it-works-the-settings-class">How It Works: The <code class="docutils literal notranslate"><span class="pre">Settings</span></code> Class</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-other-components-use-settings">How Other Components Use Settings</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#under-the-hood-pydantic-s-loading-order">Under the Hood: Pydantic’s Loading Order</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-in-different-environments-local-vs-railway">Configuration in Different Environments (Local vs. Railway)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conclusion">Conclusion</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Austin-Z
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

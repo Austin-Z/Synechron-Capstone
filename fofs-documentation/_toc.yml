@@ -1,0 +1,14 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: index
+chapters:
+- file: 01_data_collector__edgarcollector_
+- file: 02_database_models__sqlalchemy_
+- file: 03_database_manager
+- file: 04_data_loading___management_scripts
+- file: 05_fund_service
+- file: 06_ai_service__geminiservice_
+- file: 07_database_migrations__alembic_
+- file: 08_application_configuration__settings_
