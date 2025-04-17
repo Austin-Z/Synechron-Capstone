@@ -58,8 +58,17 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'index';</script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@latest/dist/mermaid.min.js"></script>
+    <script src="_static/auto-mermaid.js?v=6e73ea02"></script>
     <script src="_static/mermaid-init.js?v=df2d6679"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -404,7 +413,8 @@ document.write(`
 <p>This project analyzes <strong>Fund of Funds (FoFs)</strong>, which are special investment funds that primarily hold other funds.
 It automatically <em>collects</em> data about funds and their holdings from official sources (like the SEC EDGAR database), <em>stores</em> this information neatly in a database, and allows users to <em>analyze</em> fund structures, identify overlaps between funds, and even interact with an <strong>AI assistant (BiL)</strong> to get insights based <em>only</em> on the collected data.</p>
 <p><strong>Source Repository:</strong> <a class="github reference external" href="https://github.com/Austin-Z/FOFs-Capstone">Austin-Z/FOFs-Capstone</a></p>
-<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>flowchart TD
+<pre  class="mermaid">
+        flowchart TD
     A0[&quot;Database Models (SQLAlchemy)&quot;]
     A1[&quot;Database Manager&quot;]
     A2[&quot;Data Collector (EdgarCollector)&quot;]
@@ -423,9 +433,7 @@ It automatically <em>collects</em> data about funds and their holdings from offi
     A6 -- &quot;Provides API Key to&quot; --&gt; A4
     A6 -- &quot;Provides DB URL to&quot; --&gt; A5
     A7 -- &quot;Uses for Data Operations&quot; --&gt; A3
-</pre></div>
-</div>
-<section id="chapters">
+    </pre><section id="chapters">
 <h2>Chapters<a class="headerlink" href="#chapters" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p><a class="reference internal" href="01_data_collector__edgarcollector_.html"><span class="std std-doc">Data Collector (EdgarCollector)</span></a></p></li>

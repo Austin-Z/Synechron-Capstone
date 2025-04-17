@@ -58,8 +58,17 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = '02_database_models__sqlalchemy_';</script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@latest/dist/mermaid.min.js"></script>
+    <script src="_static/auto-mermaid.js?v=6e73ea02"></script>
     <script src="_static/mermaid-init.js?v=df2d6679"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -547,27 +556,26 @@ document.write(`
 <section id="under-the-hood-sqlalchemy-s-magic">
 <h2>Under the Hood: SQLAlchemy’s Magic<a class="headerlink" href="#under-the-hood-sqlalchemy-s-magic" title="Link to this heading">#</a></h2>
 <p>Let’s visualize how creating a new <code class="docutils literal notranslate"><span class="pre">Fund</span></code> record works using these models:</p>
-<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>sequenceDiagram
+<pre  class="mermaid">
+        sequenceDiagram
     participant UserScript as Data Loading Script
     participant Models as Fund Class (Blueprint)
     participant DBSession as SQLAlchemy Session
     participant SQLAlchemyORM as SQLAlchemy ORM Engine
     participant Database
 
-    UserScript-&gt;&gt;Models: Create Fund object: `fund = Fund(ticker=&#39;MDIZX&#39;, ...)`
+    UserScript-&gt;&gt;Models: Create Fund object: `fund = Fund(ticker='MDIZX', ...)`
     UserScript-&gt;&gt;DBSession: Add object to session: `session.add(fund)`
-    Note over DBSession: Object is now &#39;pending&#39;
+    Note over DBSession: Object is now 'pending'
     UserScript-&gt;&gt;DBSession: Commit transaction: `session.commit()`
-    DBSession-&gt;&gt;SQLAlchemyORM: Process &#39;pending&#39; Fund object
+    DBSession-&gt;&gt;SQLAlchemyORM: Process 'pending' Fund object
     SQLAlchemyORM-&gt;&gt;SQLAlchemyORM: Generate SQL: `INSERT INTO funds ...`
     SQLAlchemyORM-&gt;&gt;Database: Execute SQL INSERT command
     Database--&gt;&gt;SQLAlchemyORM: Confirm insertion (e.g., return new ID)
     SQLAlchemyORM--&gt;&gt;DBSession: Commit successful
     Note over Models: Fund object might get updated (e.g., with the new ID)
     DBSession--&gt;&gt;UserScript: Commit finished
-</pre></div>
-</div>
-<ol class="arabic simple">
+    </pre><ol class="arabic simple">
 <li><p>Your script creates a standard Python object using one of our model classes (e.g., <code class="docutils literal notranslate"><span class="pre">Fund</span></code>).</p></li>
 <li><p>You add this object to a SQLAlchemy <code class="docutils literal notranslate"><span class="pre">Session</span></code> (managed by our <a class="reference internal" href="03_database_manager.html"><span class="std std-doc">Database Manager</span></a>). The session tracks changes.</p></li>
 <li><p>When you <code class="docutils literal notranslate"><span class="pre">commit</span></code> the session, SQLAlchemy looks at the objects you added.</p></li>

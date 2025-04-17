@@ -85,7 +85,7 @@ Let's follow the `EdgarCollector` researcher on its journey:
 
 Here's a simplified diagram showing the main interactions for fetching one fund's data:
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant User
     participant Collector as EdgarCollector

@@ -166,7 +166,7 @@ Let's visualize the `autogenerate` and `upgrade` process:
     *   It executes the `upgrade()` function inside `xxxxxxxxxxxx_...py`. This function uses SQLAlchemy's `op` object to send the actual `ALTER TABLE funds ADD COLUMN nickname VARCHAR(50);` SQL command to the database.
     *   After successfully executing the `upgrade()` function, Alembic updates the `alembic_version` table to store the new revision ID (`xxxxxxxxxxxx`).
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant Dev as Developer
     participant Models as database.py

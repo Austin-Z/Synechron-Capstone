@@ -183,7 +183,7 @@ When you create `settings = Settings()`, Pydantic looks for values in this order
 3.  **Default Values:** If not found in either place, it uses the default value defined in the `Settings` class itself (e.g., `db_host = "localhost"`).
 4.  **Error:** If no value is found and no default was provided (like for `sec_user_agent` in our example), Pydantic raises an error.
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant Code as Your Code (e.g., DBMgr)
     participant SettingsClass as Settings()

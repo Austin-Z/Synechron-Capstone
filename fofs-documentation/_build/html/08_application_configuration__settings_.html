@@ -58,8 +58,17 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = '08_application_configuration__settings_';</script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@latest/dist/mermaid.min.js"></script>
+    <script src="_static/auto-mermaid.js?v=6e73ea02"></script>
     <script src="_static/mermaid-init.js?v=df2d6679"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -591,7 +600,8 @@ DEBUG=True
 <li><p><strong>Default Values:</strong> If not found in either place, it uses the default value defined in the <code class="docutils literal notranslate"><span class="pre">Settings</span></code> class itself (e.g., <code class="docutils literal notranslate"><span class="pre">db_host</span> <span class="pre">=</span> <span class="pre">&quot;localhost&quot;</span></code>).</p></li>
 <li><p><strong>Error:</strong> If no value is found and no default was provided (like for <code class="docutils literal notranslate"><span class="pre">sec_user_agent</span></code> in our example), Pydantic raises an error.</p></li>
 </ol>
-<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>sequenceDiagram
+<pre  class="mermaid">
+        sequenceDiagram
     participant Code as Your Code (e.g., DBMgr)
     participant SettingsClass as Settings()
     participant Pydantic as Pydantic BaseSettings Logic
@@ -619,9 +629,7 @@ DEBUG=True
     Pydantic-&gt;&gt;Pydantic: Validate data types (e.g., port is int)
     Pydantic--&gt;&gt;SettingsClass: Populate settings object attributes
     SettingsClass--&gt;&gt;Code: Return initialized `settings` object
-</pre></div>
-</div>
-</section>
+    </pre></section>
 <section id="configuration-in-different-environments-local-vs-railway">
 <h2>Configuration in Different Environments (Local vs. Railway)<a class="headerlink" href="#configuration-in-different-environments-local-vs-railway" title="Link to this heading">#</a></h2>
 <p>This system makes handling different environments easy:</p>

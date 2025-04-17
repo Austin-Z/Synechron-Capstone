@@ -130,7 +130,7 @@ Let's trace the steps when you ask `GeminiService` about "@MDIZX":
 
 Here’s a simplified diagram of the flow:
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant UserCode as Your Code
     participant GeminiSvc as GeminiService

@@ -112,7 +112,7 @@ Let's trace the journey of the `load_initial_funds.py` script when it tries to l
 
 Here's a simplified diagram of the flow for loading one new fund:
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant LoadScript as load_initial_funds.py
     participant Collector as EdgarCollector

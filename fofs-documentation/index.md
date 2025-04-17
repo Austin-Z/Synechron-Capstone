@@ -6,7 +6,7 @@ It automatically *collects* data about funds and their holdings from official so
 
 **Source Repository:** [https://github.com/Austin-Z/FOFs-Capstone](https://github.com/Austin-Z/FOFs-Capstone)
 
-```mermaid
+```{mermaid}
 flowchart TD
     A0["Database Models (SQLAlchemy)"]
     A1["Database Manager"]

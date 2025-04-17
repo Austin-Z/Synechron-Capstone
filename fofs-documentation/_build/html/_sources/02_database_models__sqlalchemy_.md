@@ -152,7 +152,7 @@ You don't usually interact with these model classes directly to *create* the tab
 
 Let's visualize how creating a new `Fund` record works using these models:
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant UserScript as Data Loading Script
     participant Models as Fund Class (Blueprint)

@@ -58,8 +58,17 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = '04_data_loading___management_scripts';</script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@latest/dist/mermaid.min.js"></script>
+    <script src="_static/auto-mermaid.js?v=6e73ea02"></script>
     <script src="_static/mermaid-init.js?v=df2d6679"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -531,7 +540,8 @@ python<span class="w"> </span>run_all.py<span class="w"> </span>--reset-db<span 
 <li><p><strong>Cleanup:</strong> After processing all tickers, the script might delete the temporary CSV files. It also closes the database session.</p></li>
 </ol>
 <p>Here’s a simplified diagram of the flow for loading one new fund:</p>
-<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>sequenceDiagram
+<pre  class="mermaid">
+        sequenceDiagram
     participant LoadScript as load_initial_funds.py
     participant Collector as EdgarCollector
     participant FileSystem
@@ -553,7 +563,7 @@ python<span class="w"> </span>run_all.py<span class="w"> </span>--reset-db<span 
 
     LoadScript-&gt;&gt;LoadScript: Check if MDIZX exists via session (Assume No)
 
-    LoadScript-&gt;&gt;Models: Create Fund(&#39;MDIZX&#39;, ...) object
+    LoadScript-&gt;&gt;Models: Create Fund('MDIZX', ...) object
     LoadScript-&gt;&gt;Models: Create Filing(...) object linked to Fund
     loop For each holding in CSV data
         LoadScript-&gt;&gt;Models: Create Holding(...) object linked to Filing
@@ -568,9 +578,7 @@ python<span class="w"> </span>run_all.py<span class="w"> </span>--reset-db<span 
 
     LoadScript-&gt;&gt;DBMgr: session.close()
     LoadScript-&gt;&gt;FileSystem: Delete MDIZX.csv (optional)
-</pre></div>
-</div>
-</section>
+    </pre></section>
 <section id="diving-deeper-into-the-code-src-scripts-load-initial-funds-py">
 <h2>Diving Deeper into the Code (<code class="docutils literal notranslate"><span class="pre">src/scripts/load_initial_funds.py</span></code>)<a class="headerlink" href="#diving-deeper-into-the-code-src-scripts-load-initial-funds-py" title="Link to this heading">#</a></h2>
 <p>Let’s look at simplified snippets from <code class="docutils literal notranslate"><span class="pre">src/scripts/load_initial_funds.py</span></code> to see how it uses the components.</p>

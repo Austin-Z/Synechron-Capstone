@@ -58,8 +58,17 @@
     <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = '05_fund_service';</script>
     <script src="https://cdn.jsdelivr.net/npm/mermaid@latest/dist/mermaid.min.js"></script>
+    <script src="_static/auto-mermaid.js?v=6e73ea02"></script>
     <script src="_static/mermaid-init.js?v=df2d6679"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -509,17 +518,18 @@ document.write(`
 <li><p><strong>Return Result:</strong> It returns the formatted DataFrame to the code that originally called the service method.</p></li>
 </ol>
 <p>Here’s a simplified sequence diagram:</p>
-<div class="highlight-mermaid notranslate"><div class="highlight"><pre><span></span>sequenceDiagram
+<pre  class="mermaid">
+        sequenceDiagram
     participant Caller as Dashboard Code
     participant FS as FundService
     participant DBSession as SQLAlchemy Session
     participant Models as Fund, Filing, Holding
     participant DB as Database
 
-    Caller-&gt;&gt;FS: get_holdings_details(session, &#39;MDIZX&#39;)
-    FS-&gt;&gt;DBSession: query(Fund).filter(ticker=&#39;MDIZX&#39;).first()
+    Caller-&gt;&gt;FS: get_holdings_details(session, 'MDIZX')
+    FS-&gt;&gt;DBSession: query(Fund).filter(ticker='MDIZX').first()
     Note over DBSession,DB: Uses Models blueprint
-    DBSession-&gt;&gt;DB: SELECT * FROM funds WHERE ticker=&#39;MDIZX&#39; LIMIT 1;
+    DBSession-&gt;&gt;DB: SELECT * FROM funds WHERE ticker='MDIZX' LIMIT 1;
     DB--&gt;&gt;DBSession: Return Fund record data
     DBSession--&gt;&gt;FS: Return Fund object
     FS-&gt;&gt;FS: Get latest Filing object from Fund object
@@ -527,9 +537,7 @@ document.write(`
     Note over FS: Accesses relationships defined in Models
     FS-&gt;&gt;FS: Format Holding objects into DataFrame
     FS--&gt;&gt;Caller: Return DataFrame of holdings
-</pre></div>
-</div>
-</section>
+    </pre></section>
 <section id="diving-deeper-into-the-code-src-services-fund-service-py">
 <h2>Diving Deeper into the Code (<code class="docutils literal notranslate"><span class="pre">src/services/fund_service.py</span></code>)<a class="headerlink" href="#diving-deeper-into-the-code-src-services-fund-service-py" title="Link to this heading">#</a></h2>
 <p>Let’s peek at some key methods within <code class="docutils literal notranslate"><span class="pre">src/services/fund_service.py</span></code>, simplified for clarity.</p>

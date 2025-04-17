@@ -35,6 +35,7 @@ html:
   extra_javascript:
     - https://cdn.jsdelivr.net/npm/mermaid@9.1.7/dist/mermaid.min.js
     - _static/mermaid-init.js
+    - _static/auto-mermaid.js
 
 # Add Mermaid support for diagrams
 sphinx:

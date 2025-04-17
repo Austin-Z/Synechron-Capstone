@@ -107,7 +107,7 @@ What happens inside the `FundService` when you ask for 'MDIZX' holdings?
 
 Here’s a simplified sequence diagram:
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant Caller as Dashboard Code
     participant FS as FundService

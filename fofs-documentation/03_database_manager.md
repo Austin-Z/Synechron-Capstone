@@ -151,7 +151,7 @@ Let's trace the steps when you create and use the `DatabaseManager`:
 
 Here's a diagram showing the initialization and session retrieval:
 
-```mermaid
+```{mermaid}
 sequenceDiagram
     participant YourScript as Your Script
     participant DBMgr as DatabaseManager
