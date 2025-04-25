@@ -94,8 +94,8 @@ FOFs-Capstone/
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/FOFs-Capstone.git
-cd FOFs-Capstone
+git clone https://github.com/yourusername/Synechron-Capstone.git
+cd Synechron-Capstone
 ```
 
 2. **Set up environment:**
@@ -111,7 +111,12 @@ docker-compose up -d
 
 4. **Access the dashboard:**
 ```
-http://localhost:8501
+python run_dashboard.py
+```
+
+5. **Access the frontend:**
+```
+npm start
 ```
 
 ## 📊 Dashboard Features
