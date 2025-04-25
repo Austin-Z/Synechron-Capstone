@@ -1,0 +1,21 @@
+streamlit
+pandas
+plotly
+python-dotenv
+sqlalchemy
+requests
+sec-edgar-api>=0.1.0
+SQLAlchemy>=1.4.0  # For DatabaseManager
+mysql-connector-python>=8.0.0
+alembic>=1.13.0
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+numpy>=1.24.0
+openpyxl>=3.1.2
+edgartools>=3.11.0
+aiohttp>=3.8.0
+pytest>=7.0.0
+mysqlclient>=2.2.0
+fuzzywuzzy>=0.18.0  # For fuzzy string matching in institutional holdings
+python-Levenshtein>=0.27.0  # Speeds up fuzzywuzzy
+# Add any other dependencies your app needs

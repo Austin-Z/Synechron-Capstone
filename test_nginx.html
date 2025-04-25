@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nginx Test Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .button { display: inline-block; background: #4285f4; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Nginx Test Page</h1>
+        <p>If you can see this page, Nginx is working correctly but might not be finding your React build files.</p>
+        
+        <h2>Diagnostic Information</h2>
+        <p>Try accessing these paths to diagnose the issue:</p>
+        <ul>
+            <li><a href="/">Root path (/)</a> - Should serve the React frontend</li>
+            <li><a href="/dashboard">Dashboard (/dashboard)</a> - Should serve the Streamlit dashboard</li>
+            <li><a href="/test.html">Test HTML (/test.html)</a> - This page</li>
+        </ul>
+        
+        <h2>Quick Access</h2>
+        <p>
+            <a href="/dashboard" class="button">Go to Dashboard</a>
+        </p>
+    </div>
+</body>
+</html>
