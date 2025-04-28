@@ -89,46 +89,86 @@ class InstitutionalHoldingsAnalyzer:
         for _, holding in self.fund_holdings.iterrows():
             ticker = holding.get('Ticker')
             if ticker and str(ticker).upper() != 'NONE' and pd.notna(ticker):
+                value_numeric = 0
+                if 'Value_Numeric' in holding:
+                    value_numeric = holding.get('Value_Numeric', 0)
+                elif 'Value' in holding:
+                    # Try to convert Value to numeric
+                    try:
+                        value_str = str(holding.get('Value', '0')).replace('$', '').replace(',', '')
+                        value_numeric = float(value_str) if value_str else 0.0
+                    except (ValueError, TypeError):
+                        value_numeric = 0.0
+                
                 valid_tickers.append(ticker)
                 ticker_to_fund_map[ticker] = {
                     'Name': holding.get('Name', ''),
-                    'Value_Numeric': holding.get('Value_Numeric', 0)
+                    'Value_Numeric': value_numeric
                 }
-        
+
         if not valid_tickers:
             return pd.DataFrame()
-            
+
         # Performance optimization: Create a list to store DataFrames instead of concatenating in each iteration
         underlying_dfs = []
-        
+
         # Process in smaller batches to avoid memory issues
         batch_size = 5  # Adjust based on performance testing
         for i in range(0, len(valid_tickers), batch_size):
             batch_tickers = valid_tickers[i:i+batch_size]
-            
+
             # Process each ticker in the batch
             for ticker in batch_tickers:
-                # Get holdings of this underlying fund
-                underlying = FundService.get_holdings_details(self.session, ticker)
-                if not underlying.empty:
-                    # Add Value_Numeric column if it doesn't exist
-                    if 'Value_Numeric' not in underlying.columns and 'Value' in underlying.columns:
-                        try:
-                            underlying['Value_Numeric'] = underlying['Value'].str.replace('$', '').str.replace(',', '').astype(float)
-                        except Exception:
-                            # Fallback if the conversion fails
-                            underlying['Value_Numeric'] = 0
-                    
-                    # Add parent fund info
-                    underlying['Parent_Fund'] = ticker_to_fund_map[ticker]['Name']
-                    underlying['Parent_Ticker'] = ticker
-                    
-                    # Add to list of DataFrames
-                    underlying_dfs.append(underlying)
+                try:
+                    # Get holdings of this underlying fund
+                    underlying = FundService.get_holdings_details(self.session, ticker)
+                    if not underlying.empty:
+                        # Add Value_Numeric column if it doesn't exist
+                        if 'Value_Numeric' not in underlying.columns and 'Value' in underlying.columns:
+                            try:
+                                # Try multiple methods to convert Value to numeric
+                                if underlying['Value'].dtype == 'object':
+                                    # If string values with $ and commas
+                                    underlying['Value_Numeric'] = underlying['Value'].apply(
+                                        lambda x: float(str(x).replace('$', '').replace(',', '')) if pd.notna(x) else 0.0
+                                    )
+                                else:
+                                    # If already numeric but wrong column name
+                                    underlying['Value_Numeric'] = underlying['Value']
+                            except Exception as e:
+                                st.warning(f"Error converting values for {ticker}: {str(e)}")
+                                # Fallback if the conversion fails
+                                underlying['Value_Numeric'] = 0.0
+
+                        # Add parent fund info
+                        underlying['Parent_Fund'] = ticker_to_fund_map[ticker]['Name']
+                        underlying['Parent_Ticker'] = ticker
+
+                        # Ensure all required columns exist
+                        for col in ['Name', 'Ticker', 'Cusip', 'Value', 'Value_Numeric', 'Pct', 'Category']:
+                            if col not in underlying.columns:
+                                underlying[col] = None
+
+                        # Add to list of DataFrames
+                        underlying_dfs.append(underlying)
+                except Exception as e:
+                    st.warning(f"Error processing underlying fund {ticker}: {str(e)}")
+                    continue
         
         # Combine all DataFrames at once (more efficient than repeated concatenation)
         if underlying_dfs:
-            return pd.concat(underlying_dfs, ignore_index=True)
+            try:
+                result = pd.concat(underlying_dfs, ignore_index=True)
+                # Final check to ensure Value_Numeric is properly set
+                if 'Value_Numeric' in result.columns:
+                    result['Value_Numeric'] = result['Value_Numeric'].apply(
+                        lambda x: float(x) if pd.notna(x) and not isinstance(x, str) else 
+                                  (float(str(x).replace('$', '').replace(',', '')) if pd.notna(x) and isinstance(x, str) else 0.0)
+                    )
+                return result
+            except Exception as e:
+                st.error(f"Error combining underlying securities: {str(e)}")
+                return pd.DataFrame()
         else:
             return pd.DataFrame()
     

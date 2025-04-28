@@ -51,29 +51,77 @@ class FundService:
     @staticmethod
     def create_holdings(session: Session, filing: Filing, holdings_df: pd.DataFrame) -> List[Holding]:
         """Create holdings records from a DataFrame."""
+        import logging
+        logger = logging.getLogger('fund_service')
+        
+        # Log the DataFrame info for debugging
+        logger.info(f"Creating holdings for filing {filing.id} with {len(holdings_df)} rows")
+        logger.info(f"DataFrame columns: {holdings_df.columns.tolist()}")
+        
+        if len(holdings_df) > 0:
+            logger.info(f"Sample row: {holdings_df.iloc[0].to_dict()}")
+        
         holdings = []
-        for _, row in holdings_df.iterrows():
-            # Clean value - remove $ and , then convert to float
-            value_str = str(row.get('Value', '0')).replace('$', '').replace(',', '')
-            value = float(value_str) if value_str else 0.0
+        try:
+            for idx, row in holdings_df.iterrows():
+                try:
+                    # Clean value - remove $ and , then convert to float
+                    value_raw = row.get('Value', 0)
+                    if isinstance(value_raw, str):
+                        value_str = value_raw.replace('$', '').replace(',', '')
+                        value = float(value_str) if value_str else 0.0
+                    else:
+                        value = float(value_raw) if not pd.isna(value_raw) else 0.0
+                    
+                    # Clean percentage - already numeric in your data
+                    pct_raw = row.get('Pct', 0)
+                    pct = float(pct_raw) if not pd.isna(pct_raw) else 0.0
+                    
+                    # Handle NaN values for all fields
+                    cusip = row.get('Cusip')
+                    cusip = None if pd.isna(cusip) else str(cusip)
+                    
+                    ticker = row.get('Ticker')
+                    ticker = None if pd.isna(ticker) else str(ticker)
+                    
+                    name = row.get('Name')
+                    name = None if pd.isna(name) else str(name)
+                    
+                    title = row.get('Title')
+                    title = None if pd.isna(title) else str(title)
+                    
+                    asset_type = row.get('Category')
+                    asset_type = None if pd.isna(asset_type) else str(asset_type)
+                    
+                    holding = Holding(
+                        filing_id=filing.id,
+                        cusip=cusip,
+                        ticker=ticker,
+                        name=name,
+                        title=title,
+                        value=value,
+                        percentage=pct,
+                        asset_type=asset_type
+                    )
+                    holdings.append(holding)
+                    
+                except Exception as e:
+                    logger.error(f"Error processing row {idx}: {str(e)}")
+                    logger.error(f"Row data: {row.to_dict()}")
             
-            # Clean percentage - already numeric in your data
-            pct = float(row.get('Pct', 0))
+            # Only commit if we have holdings to save
+            if holdings:
+                logger.info(f"Saving {len(holdings)} holdings to database")
+                session.bulk_save_objects(holdings)
+                session.commit()
+                logger.info(f"Successfully saved {len(holdings)} holdings")
+            else:
+                logger.warning("No holdings to save")
+                
+        except Exception as e:
+            logger.error(f"Error creating holdings: {str(e)}")
+            session.rollback()
             
-            holding = Holding(
-                filing_id=filing.id,
-                cusip=row.get('Cusip'),
-                ticker=row.get('Ticker', 'None'),  # Use 'None' as shown in Excel
-                name=row.get('Name'),
-                title=row.get('Title'),
-                value=value,
-                percentage=pct,
-                asset_type=row.get('Category')  # RF EC, RF STIV etc.
-            )
-            holdings.append(holding)
-            
-        session.bulk_save_objects(holdings)
-        session.commit()
         return holdings
         
     @staticmethod
@@ -201,10 +249,29 @@ class FundService:
                 st.warning(f"No fund or filings found for {ticker}")
                 return pd.DataFrame()
             
-            latest_filing = fund.filings[0]
+            # First try to find a filing with holdings
+            filing_with_holdings = None
+            
+            # Sort filings by date to ensure we try the latest ones first
+            sorted_filings = sorted(fund.filings, key=lambda x: x.filing_date, reverse=True)
+            
+            # Try to find a filing with holdings
+            for filing in sorted_filings:
+                if filing.holdings:
+                    filing_with_holdings = filing
+                    break
+            
+            # If no filing with holdings found, use the latest filing
+            if not filing_with_holdings and sorted_filings:
+                filing_with_holdings = sorted_filings[0]
+                
+            # If still no filing found, return empty DataFrame
+            if not filing_with_holdings:
+                return pd.DataFrame()
+            
             holdings_data = []
             
-            for holding in latest_filing.holdings:
+            for holding in filing_with_holdings.holdings:
                 holdings_data.append({
                     'Name': holding.name,
                     'Ticker': holding.ticker,

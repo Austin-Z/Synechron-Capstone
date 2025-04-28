@@ -26,9 +26,10 @@ class PortfolioAnalyzer:
             
             # Create tabs for each fund
             fund_tabs = st.tabs(self.identifiers)
-            
-            for identifier, tab in zip(self.identifiers, fund_tabs):
-                with tab:
+        
+        for identifier, tab in zip(self.identifiers, fund_tabs):
+            with tab:
+                try:
                     # Try getting fund by ticker first
                     fund = FundService.get_fund_by_ticker(self.session, identifier)
                     if not fund:
@@ -57,17 +58,44 @@ class PortfolioAnalyzer:
                             df.head(),
                             use_container_width=True
                         )
-                        if 'Value' in df.columns:
-                            df['Value_Numeric'] = df['Value'].str.replace('$', '').str.replace(',', '').astype(float)
+                        
+                        # Ensure Value_Numeric column exists with proper formatting
+                        if 'Value_Numeric' not in df.columns:
+                            if 'Value' in df.columns:
+                                try:
+                                    # Try to convert Value column to numeric
+                                    if df['Value'].dtype == 'object':
+                                        # For string values with $ and commas
+                                        df['Value_Numeric'] = df['Value'].apply(
+                                            lambda x: float(str(x).replace('$', '').replace(',', '')) if pd.notna(x) else 0.0
+                                        )
+                                    else:
+                                        # If already numeric but wrong column name
+                                        df['Value_Numeric'] = df['Value']
+                                except Exception as e:
+                                    st.warning(f"Error converting values for {identifier}: {str(e)}")
+                                    # Fallback if the conversion fails
+                                    df['Value_Numeric'] = 0.0
+                            else:
+                                # If no Value column exists
+                                df['Value_Numeric'] = 0.0
+                        
+                        # Ensure Name column exists
+                        if 'Name' not in df.columns and 'name' in df.columns:
+                            df['Name'] = df['name']
                         
                         # Store data for both uses
                         self.holdings_data[identifier] = df
                         self.holdings_map[identifier] = {
-                            row['Name']: row for _, row in df.iterrows()
+                            row['Name']: row for _, row in df.iterrows() if 'Name' in row and pd.notna(row['Name'])
                         }
                     else:
                         self.holdings_data[identifier] = pd.DataFrame()
                         self.holdings_map[identifier] = {}
+                except Exception as e:
+                    st.error(f"Error loading holdings for {identifier}: {str(e)}")
+                    self.holdings_data[identifier] = pd.DataFrame()
+                    self.holdings_map[identifier] = {}
 
     def analyze_overlaps(self, show_summary=True):
         """Analyze overlapping holdings across funds"""
@@ -135,17 +163,33 @@ class PortfolioAnalyzer:
 
 def create_overlap_visualization(overlap_data, tickers, fund_types):
     """Create interactive visualization of overlaps with fund type indicators"""
-    matrix = pd.DataFrame(0, index=tickers, columns=tickers)
+    # Filter out fund of funds from the heatmap
+    direct_holdings = [t for t in tickers if fund_types.get(t) != 'fund_of_funds']
+    
+    # Create matrix with only direct holdings
+    matrix = pd.DataFrame(0, index=direct_holdings, columns=direct_holdings)
     
     for holding_data in overlap_data.values():
-        funds = list(holding_data['funds'])
+        funds = [f for f in list(holding_data['funds']) if f in direct_holdings]
         for i in range(len(funds)):
             for j in range(i+1, len(funds)):
                 matrix.loc[funds[i], funds[j]] += 1
                 matrix.loc[funds[j], funds[i]] += 1
     
-    # Add fund type indicators to labels
-    x_labels = [f"{'📦' if fund_types[t] == 'fund_of_funds' else '📈'} {t}" for t in tickers]
+    # If no direct holdings, return empty figure with message
+    if len(direct_holdings) == 0:
+        fig = go.Figure()
+        fig.update_layout(
+            title="No direct holdings to display",
+            height=600,
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font={'color': 'white'},
+        )
+        return fig
+    
+    # Add fund type indicators to labels (all should be direct holdings now)
+    x_labels = [f"📈 {t}" for t in direct_holdings]
     
     fig = go.Figure(data=go.Heatmap(
         z=matrix.values,
@@ -166,7 +210,7 @@ def create_overlap_visualization(overlap_data, tickers, fund_types):
     ))
     
     fig.update_layout(
-        title="Fund Overlap Matrix (📦 Fund of Funds, 📈 Underlying Fund)",
+        title="Direct Holdings Overlap Matrix",
         xaxis_title="Fund Ticker",
         yaxis_title="Fund Ticker",
         height=600,

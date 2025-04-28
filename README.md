@@ -94,8 +94,8 @@ FOFs-Capstone/
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/Synechron-Capstone.git
-cd Synechron-Capstone
+git clone https://github.com/yourusername/FOFs-Capstone.git
+cd FOFs-Capstone
 ```
 
 2. **Set up environment:**
@@ -111,12 +111,7 @@ docker-compose up -d
 
 4. **Access the dashboard:**
 ```
-python run_dashboard.py
-```
-
-5. **Access the frontend:**
-```
-npm start
+http://localhost:8501
 ```
 
 ## 📊 Dashboard Features
@@ -305,16 +300,3 @@ graph TD
 ## 📄 License
 This project is licensed under the MIT License.
 
-## 🙏 Acknowledgments
-- SEC EDGAR for financial data access
-- OpenFIGI for security identification
-- MFS Investment Management for fund data
-- Google Gemini for AI capabilities
-- Railway for hosting and deployment services
-
-## 👥 Contributors
-- Austin Zhang
-- Ryan Lomicka
-- Bilal Rana
-- Liam Cushen
-- Jiayi Wang

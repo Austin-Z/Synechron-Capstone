@@ -178,7 +178,28 @@ class InstitutionalService:
         matched_holdings = []
         matched_fund_values = 0.0
         
-        # Convert to dictionaries for faster lookups
+        # Ensure Value_Numeric column exists in both DataFrames
+        if 'Value_Numeric' not in fund_holdings.columns and 'Value' in fund_holdings.columns:
+            try:
+                # Try to convert Value column to numeric
+                fund_holdings['Value_Numeric'] = fund_holdings['Value'].apply(
+                    lambda x: float(str(x).replace('$', '').replace(',', '')) if pd.notna(x) else 0.0
+                )
+            except Exception:
+                # Fallback to zeros if conversion fails
+                fund_holdings['Value_Numeric'] = 0.0
+                
+        if 'Value_Numeric' not in institution_holdings.columns and 'Value' in institution_holdings.columns:
+            try:
+                # Try to convert Value column to numeric
+                institution_holdings['Value_Numeric'] = institution_holdings['Value'].apply(
+                    lambda x: float(str(x).replace('$', '').replace(',', '')) if pd.notna(x) else 0.0
+                )
+            except Exception:
+                # Fallback to zeros if conversion fails
+                institution_holdings['Value_Numeric'] = 0.0
+        
+        # Calculate total fund value safely
         try:
             total_fund_value = fund_holdings['Value_Numeric'].sum()
         except Exception:
@@ -188,41 +209,56 @@ class InstitutionalService:
         fund_dict = fund_holdings.to_dict('records')
         inst_dict = {}
         
-        # Create ticker-based lookup for institutions
+        # Create ticker-based lookup for institutions - normalize tickers
         for record in institution_holdings.to_dict('records'):
             ticker = record.get('Ticker')
-            if ticker and str(ticker).upper() != 'NONE' and pd.notna(ticker):
-                inst_dict[ticker] = record
+            if ticker and pd.notna(ticker):
+                # Normalize ticker to handle different formats
+                norm_ticker = str(ticker).upper().strip()
+                if norm_ticker != 'NONE' and norm_ticker != 'NAN':
+                    inst_dict[norm_ticker] = record
         
         # First pass: Match by ticker (much faster than iterating through DataFrames)
         ticker_matched_indices = set()
         for i, fund_record in enumerate(fund_dict):
             ticker = fund_record.get('Ticker')
-            if ticker and str(ticker).upper() != 'NONE' and pd.notna(ticker) and ticker in inst_dict:
-                inst_record = inst_dict[ticker]
-                
-                match_record = {
-                    'Name': fund_record.get('Name', ''),
-                    'Security': fund_record.get('Name', ''),  # For backward compatibility
-                    'Ticker': ticker,
-                    'Fund_Value': fund_record.get('Value', '$0.00'),
-                    'Fund_Value_Numeric': fund_record.get('Value_Numeric', 0.0),
-                    'Fund_Pct': fund_record.get('Pct', 0.0),
-                    'Institution_Value': inst_record.get('Value', '$0.00'),
-                    'Institution_Value_Numeric': inst_record.get('Value_Numeric', 0.0),
-                    'Institution_Pct': inst_record.get('Pct', 0.0),
-                    'Match_Type': 'Ticker'
-                }
-                
-                # Add parent fund info if available
-                if 'Parent_Fund' in fund_record:
-                    match_record['Parent_Fund'] = fund_record['Parent_Fund']
-                if 'Parent_Ticker' in fund_record:
-                    match_record['Parent_Ticker'] = fund_record['Parent_Ticker']
-                
-                matched_holdings.append(match_record)
-                matched_fund_values += fund_record.get('Value_Numeric', 0.0)
-                ticker_matched_indices.add(i)
+            if ticker and pd.notna(ticker):
+                # Normalize ticker
+                norm_ticker = str(ticker).upper().strip()
+                if norm_ticker != 'NONE' and norm_ticker != 'NAN' and norm_ticker in inst_dict:
+                    inst_record = inst_dict[norm_ticker]
+                    
+                    # Safely get values with defaults
+                    fund_value_numeric = fund_record.get('Value_Numeric', 0.0)
+                    if not isinstance(fund_value_numeric, (int, float)) or pd.isna(fund_value_numeric):
+                        fund_value_numeric = 0.0
+                        
+                    inst_value_numeric = inst_record.get('Value_Numeric', 0.0)
+                    if not isinstance(inst_value_numeric, (int, float)) or pd.isna(inst_value_numeric):
+                        inst_value_numeric = 0.0
+                    
+                    match_record = {
+                        'Name': fund_record.get('Name', ''),
+                        'Security': fund_record.get('Name', ''),  # For backward compatibility
+                        'Ticker': ticker,
+                        'Fund_Value': fund_record.get('Value', '$0.00'),
+                        'Fund_Value_Numeric': fund_value_numeric,
+                        'Fund_Pct': fund_record.get('Pct', 0.0),
+                        'Institution_Value': inst_record.get('Value', '$0.00'),
+                        'Institution_Value_Numeric': inst_value_numeric,
+                        'Institution_Pct': inst_record.get('Pct', 0.0),
+                        'Match_Type': 'Ticker'
+                    }
+                    
+                    # Add parent fund info if available
+                    if 'Parent_Fund' in fund_record:
+                        match_record['Parent_Fund'] = fund_record['Parent_Fund']
+                    if 'Parent_Ticker' in fund_record:
+                        match_record['Parent_Ticker'] = fund_record['Parent_Ticker']
+                    
+                    matched_holdings.append(match_record)
+                    matched_fund_values += fund_value_numeric
+                    ticker_matched_indices.add(i)
         
         # Second pass: For non-ticker matches, use optimized name matching
         # Only process a limited number of potential matches to avoid performance issues
@@ -232,17 +268,32 @@ class InstitutionalService:
         unmatched_fund_records = [rec for i, rec in enumerate(fund_dict) if i not in ticker_matched_indices]
         
         # Get institution names for matching
-        inst_names = [(i, rec.get('Name', '')) for i, rec in enumerate(institution_holdings.to_dict('records'))][:MAX_NAME_MATCHES]
+        inst_names = []
+        for i, rec in enumerate(institution_holdings.to_dict('records')):
+            name = rec.get('Name', '')
+            if name and pd.notna(name):
+                inst_names.append((i, str(name).strip()))
+        
+        # Limit to prevent performance issues
+        inst_names = inst_names[:MAX_NAME_MATCHES]
         
         # Process only a subset of unmatched records if there are too many
         if len(unmatched_fund_records) > MAX_NAME_MATCHES:
-            unmatched_fund_records = sorted(unmatched_fund_records, 
-                                           key=lambda x: x.get('Value_Numeric', 0), 
-                                           reverse=True)[:MAX_NAME_MATCHES]
+            try:
+                unmatched_fund_records = sorted(unmatched_fund_records, 
+                                               key=lambda x: x.get('Value_Numeric', 0), 
+                                               reverse=True)[:MAX_NAME_MATCHES]
+            except Exception:
+                # If sorting fails, just take the first MAX_NAME_MATCHES records
+                unmatched_fund_records = unmatched_fund_records[:MAX_NAME_MATCHES]
         
         # Fuzzy match by name (with performance limits)
         for fund_record in unmatched_fund_records:
             fund_name = fund_record.get('Name', '')
+            if not fund_name or not pd.notna(fund_name):
+                continue
+                
+            fund_name = str(fund_name).strip()
             if not fund_name:
                 continue
                 
