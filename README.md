@@ -1,7 +1,7 @@
 # 🌐 Fund of Funds Analysis Platform
 
 ## 📊 Overview
-An interactive platform for analyzing Fund of Funds (FOF) structures, with a focus on mutual funds like MFS Diversified International Fund (MDIZX) and others such as GLEAX, LIONX, and more. The platform provides real-time visualization of fund structures, holdings analysis, overlap detection, and an AI-powered chat interface for fund data exploration, all accessible through a modern React frontend with a Streamlit dashboard integration.
+An interactive platform for analyzing Fund of Funds (FOF) structures, with a focus on mutual funds like MFS Diversified International Fund (MDIZX) and others such as GLEAX, LIONX, and more. The platform provides real-time visualization of fund structures, holdings analysis, overlap detection, and an AI-powered chat interface for fund data exploration, all accessible through a Streamlit dashboard.
 
 ## ✨ Key Features
 - 🔍 **Fund Structure Visualization**
@@ -25,7 +25,6 @@ An interactive platform for analyzing Fund of Funds (FOF) structures, with a foc
   - Ticker symbol detection and validation (@ticker)
   - Overlap analysis integration (@overlap)
   - Enhanced responses with real-time fund data
-  - Seamless dashboard-to-chat interaction
 
 ## 🚀 Current Analysis: MDIZX
 - Total Assets: $38.06B
@@ -40,11 +39,6 @@ An interactive platform for analyzing Fund of Funds (FOF) structures, with a foc
 ## 🏗️ Project Structure
 ```
 FOFs-Capstone/
-├── frontend/                # React frontend
-│   ├── src/
-│   │   ├── components/      # UI components
-│   │   ├── pages/           # Page layouts
-│   │   └── App.tsx          # Main application
 ├── src/
 │   ├── dashboard/           # Streamlit dashboard
 │   │   ├── app.py           # Main dashboard app
@@ -62,10 +56,10 @@ FOFs-Capstone/
 │   └── services/            # Business logic
 │       ├── fund_service.py  # Fund data operations
 │       └── gemini_service.py # AI integration
-├── server.js                # Express server
 ├── docker-compose.yml       # Multi-container setup
 ├── Dockerfile               # Container definition
 ├── requirements.txt         # Python dependencies
+├── run_dashboard.py         # Script to run the Streamlit dashboard
 └── .env.example            # Environment template
 ```
 
@@ -76,12 +70,6 @@ FOFs-Capstone/
 - 🐋 Docker
 - 📊 Plotly
 - 🧠 Google Gemini 2.0 Flash API
-- ⚛️ React/TypeScript
-- 🚂 Express.js
-- 🌐 Nginx
-- 🔄 React Query
-- 💅 Tailwind CSS
-- 🍞 Sonner (Toast notifications)
 
 ## 📦 Prerequisites
 - Docker and Docker Compose
@@ -94,8 +82,8 @@ FOFs-Capstone/
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/FOFs-Capstone.git
-cd FOFs-Capstone
+git clone https://github.com/Synechron-Capstone.git
+cd Synechron-Capstone
 ```
 
 2. **Set up environment:**
@@ -104,9 +92,9 @@ cp .env.example .env
 # Edit .env with your credentials
 ```
 
-3. **Start with Docker:**
+3. **Run the dashboard directly:**
 ```bash
-docker-compose up -d
+python run_dashboard.py
 ```
 
 4. **Access the dashboard:**
@@ -245,31 +233,21 @@ graph TD
 
 ```mermaid
 graph TD
-    A[Docker Compose] -->|Start Services| B[MySQL Container]
-    A -->|Start Services| C[Application Container]
-    B -->|Database Connection| C
-    C -->|Run| D[Express Server on Port 8080]
-    D -->|Serve| E[React Frontend]
-    D -->|Proxy| F[Streamlit Server on Port 3001]
-    E -->|User Interaction| G[Web Browser Root Path /]
-    F -->|Dashboard Access| G[Web Browser /dashboard Path]
-    H[.env File] -->|Configuration| C
+    A[run_dashboard.py] -->|Start| B[Streamlit Server]
+    B -->|Database Connection| C[MySQL Database]
+    D[.env File] -->|Configuration| B
+    B -->|Dashboard Access| E[Web Browser]
 ```
 
 1. **Environment Setup**:
    - Configuration variables loaded from .env file
    - Database credentials, API keys (Gemini, OpenFIGI), and service endpoints defined
-   - Docker containers orchestrated via docker-compose.yml
 
 2. **Application Startup**:
-   - Express server starts on port 8080 (Railway's default port)
-   - Serves React frontend for the root path (/)
-   - Proxies dashboard requests to Streamlit on port 3001
+   - Streamlit server starts on port 8501
    - Database connections established via DatabaseManager
 
 3. **User Interaction**:
-   - React landing page with modern UI rendered at root path
-   - "Demo" button navigates to the Streamlit dashboard at /dashboard
    - Interactive dashboard components handle fund analysis
    - AI-powered chat interface with fund data integration
 
